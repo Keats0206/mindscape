@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { DM_Sans, Space_Grotesk } from 'next/font/google'
 import { Button } from "@/components/ui/button";
-import { RainbowButton } from "@/components/ui/rainbow-button";
 import Link from "next/link";
 
 // If loading a variable font, you don't need to specify the font weight
