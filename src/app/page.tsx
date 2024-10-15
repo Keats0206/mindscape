@@ -1,101 +1,126 @@
-import Image from "next/image";
+"use client"
+
+import styles from './page.module.scss'
+import Image from 'next/image';
+import { useRef } from 'react';
+import gsap from 'gsap';
+import {
+    generation1, 
+    generation2, 
+    generation3, 
+    generation4, 
+    generation5, 
+    generation6, 
+    generation7, 
+    generation8
+} from '@/data/images'
+import WordRotate from "@/components/ui/word-rotate";
+import { RainbowButton } from "@/components/ui/rainbow-button";
+import { Libre_Baskerville } from 'next/font/google'
+
+const displayFont = Libre_Baskerville({ subsets: ['latin'], weight: ['400', '700'] })
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const plane1 = useRef(null);
+  const plane2 = useRef(null);
+  const plane3 = useRef(null);
+  let requestAnimationFrameId: number | null = null;
+  let xForce = 0;
+  let yForce = 0;
+  const easing = 0.08;
+  const speed = 0.01;
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const manageMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const { movementX, movementY } = e
+    xForce += movementX * speed;
+    yForce += movementY * speed;
+
+    if(requestAnimationFrameId == null){
+      requestAnimationFrameId = requestAnimationFrame(animate);
+    }
+  }
+
+  const lerp = (start: number, target: number, amount: number) => start * (1 - amount) +target * amount;
+
+  const animate = () => {
+    xForce = lerp(xForce, 0, easing);
+    yForce = lerp(yForce, 0, easing);
+    gsap.set(plane1.current, {x: `+=${xForce}`, y: `+=${yForce}`})
+    gsap.set(plane2.current, {x: `+=${xForce * 0.5}`, y: `+=${yForce * 0.5}`})
+    gsap.set(plane3.current, {x: `+=${xForce * 0.25}`, y: `+=${yForce * 0.25}`})
+
+    if(Math.abs(xForce) < 0.01) xForce = 0;
+    if(Math.abs(yForce) < 0.01) yForce = 0;
+    
+    if(xForce != 0 || yForce != 0){
+      requestAnimationFrame(animate);
+    }
+    else{
+      cancelAnimationFrame(requestAnimationFrameId as number)
+      requestAnimationFrameId = null;
+    }
+  }
+
+  return (
+    <main onMouseMove={(e) => {manageMouseMove(e as React.MouseEvent<HTMLDivElement>)}} className={styles.main}>
+      <div ref={plane1} className={styles.plane}>
+          <Image 
+            src={generation1}
+            alt='image'
+            width={300}
+          />
+           <Image 
+            src={generation2}
+            alt='image'
+            width={300}
+          />
+          <Image 
+            src={generation3}
+            alt='image'
+            width={225}
+          />
+      </div>
+      <div ref={plane2} className={styles.plane}>
+          <Image 
+            src={generation4}
+            alt='image'
+            width={250}
+          />
+           <Image 
+            src={generation6}
+            alt='image'
+            width={200}
+          />
+          <Image 
+            src={generation8}
+            alt='image'
+            width={225}
+          />
+      </div>
+      <div ref={plane3} className={styles.plane}>
+          <Image 
+            src={generation7}
+            alt='image'
+            width={150}
+          />
+           <Image 
+            src={generation5}
+            alt='image'
+            width={200}
+          />
+      </div>
+      <div className={displayFont.className}>
+        <div className='z-50 w-screen h-screen flex flex-col items-center justify-center'>
+          <div className='flex flex-col items-center justify-center mb-12'>
+            <div className=' z-50 text-6xl font-medium max-w-[700px] text-center'>Dream up your next</div>
+            <WordRotate
+              className={`text-center text-6xl pb-2 font-medium`}
+              words={["outfit idea", "tattoo concept", "nail desin"]}
+            />          
+          <RainbowButton className='text-sm'>Join Beta</RainbowButton>;
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+      </div>
+    </main>
+  )
 }
