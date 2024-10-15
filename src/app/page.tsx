@@ -17,6 +17,7 @@ import {
 import WordRotate from "@/components/ui/word-rotate";
 import { RainbowButton } from "@/components/ui/rainbow-button";
 import { Libre_Baskerville } from 'next/font/google'
+import Link from 'next/link';
 
 const displayFont = Libre_Baskerville({ subsets: ['latin'], weight: ['400', '700'] })
 
@@ -67,57 +68,61 @@ export default function Home() {
           <Image 
             src={generation1}
             alt='image'
-            width={300}
+            width={400}
           />
            <Image 
             src={generation2}
             alt='image'
-            width={300}
+            width={400}
           />
           <Image 
             src={generation3}
             alt='image'
-            width={225}
+            width={275}
           />
       </div>
       <div ref={plane2} className={styles.plane}>
           <Image 
             src={generation4}
             alt='image'
-            width={250}
+            width={300}
           />
            <Image 
             src={generation6}
             alt='image'
-            width={200}
+            width={225}
           />
           <Image 
             src={generation8}
             alt='image'
-            width={225}
+            width={275}
           />
       </div>
       <div ref={plane3} className={styles.plane}>
           <Image 
             src={generation7}
             alt='image'
-            width={150}
+            width={200}
           />
            <Image 
             src={generation5}
             alt='image'
-            width={200}
+            width={250}
           />
       </div>
-      <div className={displayFont.className}>
-        <div className='z-50 w-screen h-screen flex flex-col items-center justify-center'>
-          <div className='flex flex-col items-center justify-center mb-12'>
-            <div className=' z-50 text-6xl font-medium max-w-[700px] text-center'>Dream up your next</div>
-            <WordRotate
-              className={`text-center text-6xl pb-2 font-medium`}
-              words={["outfit idea", "tattoo concept", "nail desin"]}
-            />          
-          <RainbowButton className='text-sm'>Join Beta</RainbowButton>;
+      <div>
+        <div className='w-screen h-screen flex flex-col items-center justify-center'>
+          <div className='z-50 flex items-center md:text-[72px] text-6xl lex flex-col items-center justify-center mb-12'>
+            <div className={displayFont.className}>
+              <div className='pb-2 z-50 font-medium max-w-4xl text-center'>Dream up your next</div>
+              <WordRotate
+                className={`text-center pb-2 font-medium`}
+                words={["outfit idea", "tattoo concept", "nail design"]}
+              />         
+            </div> 
+            <Link href='/waitlist'>
+              <RainbowButton className='mt-4 text-base px-12 py-4'>Join Beta</RainbowButton>
+            </Link>
           </div>
         </div>
       </div>

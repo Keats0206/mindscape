@@ -1,42 +1,81 @@
 "use client"
 
+"use client"
+
 import { useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import dynamic from 'next/dynamic';
+import { ImageItem } from '@/components/ui/image-cloud';
+
+const ImageCloud = dynamic(() => import('@/components/ui/image-cloud'), { ssr: false });
 
 const WaitlistPage = () => {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState({ type: '', message: '' });
+  const [submitStatus, setSubmitStatus] = useState<{ type: string; message: string }>({ type: '', message: '' });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitStatus({ type: '', message: '' });
 
-    try {
-      const { error } = await supabase
-        .from('newsletter_subscribers')
-        .insert([{ email }]);
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setSubmitStatus({ type: 'error', message: 'Please enter a valid email address.' });
+      setIsSubmitting(false);
+      return;
+    }
 
-      if (error) throw error;
+    try {
+      console.log(email);
+
+      const { data, error } = await supabase
+        .from('waitlist_emails')
+        .insert({ email })
+        .select();
+
+      if (error) {
+        throw error;
+      }
+
+      console.log(data);
+
       setSubmitStatus({ type: 'success', message: 'Thank you for subscribing!' });
       setEmail('');
     } catch (error) {
       console.error('Error submitting to waitlist:', error);
-      setSubmitStatus({ type: 'error', message: 'An error occurred. Please try again.' });
+      setSubmitStatus({ 
+        type: 'error', 
+        message: error instanceof Error ? error.message : 'An error occurred. Please try again.'
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const images: ImageItem[] = [
+    { src: '/generation_1.png', alt: 'Image 1' },
+    { src: '/generation_2.png', alt: 'Image 2' },
+    { src: '/generation_3.png', alt: 'Image 3' },
+    { src: '/generation_4.png', alt: 'Image 4' },
+    { src: '/generation_5.png', alt: 'Image 5' },
+    { src: '/generation_6.png', alt: 'Image 6' },
+    { src: '/generation_7.png', alt: 'Image 7' },
+    { src: '/generation_8.png', alt: 'Image 8' },
+  ];
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="w-screen absolute top-0 z-10 min-h-screen flex justify-center bg-background px-4 sm:px-6 lg:px-8">
+      <div className="z-30 max-w-md w-full space-y-8">
+        <div className='w-full h-96'>   
+          <ImageCloud images={images}/>
+        </div>    
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-foreground">
+          <h2 className="text-center text-3xl font-extrabold text-foreground">
             Join Waitlist
           </h2>
         </div>
@@ -54,6 +93,7 @@ const WaitlistPage = () => {
               placeholder="Email address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              className='bg-white'
             />
           </div>
 

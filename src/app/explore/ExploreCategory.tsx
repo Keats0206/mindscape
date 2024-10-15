@@ -17,6 +17,8 @@ import {
   BreadcrumbLink, 
   BreadcrumbSeparator 
 } from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
+import { CopyIcon } from "lucide-react";
 
 export interface Generation {
   id: string;
@@ -113,31 +115,48 @@ export default function ExploreCategory({ initialCategory }: ExploreCategoryProp
       ) : (
         <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {generations.map((item) => (
-            <Card key={item.id} className="overflow-hidden transition-transform duration-300">
+            <GenerationCard key={item.id} generation={item} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+const GenerationCard = ({ generation }: { generation: Generation }) => {
+  const [didCopy, setDidCopy] = useState(false);
+
+  function handleCopy(prompt: string) {
+    navigator.clipboard.writeText(prompt);
+    setDidCopy(true);
+    setTimeout(() => {
+      setDidCopy(false);
+    }, 2000);
+  }
+
+  return (
+    <Card key={generation.id} className="flex flex-col justify-between overflow-hidden transition-transform duration-300">
               <CardHeader className="p-0">
                 <Image
-                  src={item.result_url || "/decor.png"}
-                  alt={item.prompt}
+                  src={generation.result_url || "/decor.png"}
+                  alt={generation.prompt}
                   width={600}
                   height={200}
                   className="object-cover overflow-hidden"
                 />
                 <CardDescription className="px-4 py-2 pb-4 flex flex-col">
                   <div className="text-gray-500 font-bold pb-1">Prompt:</div>
-                  {item.prompt}
+                  {generation.prompt}
                   </CardDescription>
               </CardHeader>
-              <CardContent className="pt-2 flex flex-wrap px-2 gap-1">
-                {/* {item.tags.map((tag) => (
-                  <div key={tag} className="text-xs rounded-md px-2 text-xs text-blue-600">
-                    #{tag.replace(' ', '-')}
-                  </div>
-                ))} */}
+              <CardContent className="pt-2 flex flex-wrap px-2 gap-1 pb-2">
+                <Button className="w-full" variant="outline" onClick={() => {
+                  handleCopy(generation.prompt);
+                }}>
+                  <CopyIcon className="mr-2" size={16}/>
+                  {didCopy ? 'Copied!' : 'Copy Prompt'}
+                </Button>
               </CardContent>
             </Card>
-          ))}
-        </div>
-      )}
-    </div>
   );
 }

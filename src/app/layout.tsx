@@ -27,7 +27,9 @@ export default function RootLayout({
             <div className="flex flex-row items-center gap-2 space-x-4">
               <Link className="hover:text-orange-400 text-xl font-bold uppercase" href="/">[mindscape]</Link>
             </div>
-            <Button className='text-sm'>Sign Up</Button>
+            <Link href='/waitlist'>
+              <Button className='text-sm'>Sign Up</Button>
+            </Link>
           </div>
         </div>
         {children}
