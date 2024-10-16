@@ -9,7 +9,7 @@ const dmSans = DM_Sans({ subsets: ['latin'] })
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: "LEO AI",
+  title: "GenspoAI",
   description: "Infinite AI generated inspiration",
 };
 
@@ -25,7 +25,7 @@ export default function RootLayout({
         <div  className={spaceGrotesk.className}>
           <div className="h-16 flex items-center px-12 w-screen border-b-2 border-gray-200 justify-between">
             <div className="flex flex-row items-center gap-2 space-x-4">
-              <Link className="hover:text-orange-400 text-xl font-bold uppercase" href="/">[mindscape]</Link>
+              <Link className="hover:text-orange-400 text-xl font-bold uppercase" href="/">[genspo]</Link>
             </div>
             <Link href='/waitlist'>
               <Button className='text-sm'>Sign Up</Button>
