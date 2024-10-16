@@ -1,12 +1,7 @@
-// app/explore/page.tsx
-import { Suspense } from 'react';
-import ExploreCategory from './ExploreCategory';
-import SignUpCTA from '@/components/ui/SignUpCTA';
-export default function ExplorePage({ searchParams }: { searchParams: { category?: string } }) {
+export default function ExplorePage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <ExploreCategory initialCategory={searchParams.category} />
-      <SignUpCTA />
-    </Suspense>
-  );
+    <div>
+      <h1>Explore</h1>
+    </div>
+  )
 }

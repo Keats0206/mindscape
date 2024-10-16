@@ -9,7 +9,7 @@ import {
   CardDescription, 
   CardContent 
 } from "@/components/ui/card";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/utils/supabase/client";
 import { 
   Breadcrumb, 
   BreadcrumbList, 
@@ -32,11 +32,11 @@ export interface Generation {
   tags: string[];
 }
 
-interface ExploreCategoryProps {
+interface CategoryProps {
   initialCategory?: string;
 }
 
-export default function ExploreCategory({ initialCategory }: ExploreCategoryProps) {
+export default function CategoryProps({ initialCategory }: CategoryProps) {
   const router = useRouter();
   const [category] = useState(initialCategory?.replace('-', ' ') || '');
   const [generations, setGenerations] = useState<Generation[]>([]);
