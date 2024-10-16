@@ -116,7 +116,7 @@ export default function Home() {
             <div className={displayFont.className}>
               <div className='pb-2 z-50 font-medium max-w-4xl text-center'>Dream up your next</div>
               <WordRotate
-                className={`text-center pb-2 font-medium`}
+                className={`text-center pb-2 font-medium text-gray-400`}
                 words={["outfit idea", "tattoo concept", "nail design"]}
               />         
             </div> 
