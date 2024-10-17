@@ -4,6 +4,9 @@ import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import Stripe from "stripe";
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function signUpAction(formData: FormData): Promise<void> {
   const email = formData.get("email")?.toString();
@@ -32,40 +35,50 @@ export async function signUpAction(formData: FormData): Promise<void> {
   if (authData.user) {
     const now = new Date().toISOString();
     
-    // Insert into users table
-    const { error: userError } = await supabase
-    .from('users')
-    .insert({
-      id: authData.user.id,
-      email: authData.user.email,
-      username: authData.user.email, // Use email as username or add a separate username field
-      created_at: now,
-      updated_at: now,
-    });
+    try {
+      // Create Stripe customer
+      const customer = await stripe.customers.create({
+        email: authData.user.email,
+        metadata: { user_id: authData.user.id }
+      });
 
-    if (userError) {
-      console.error("Error creating user in custom table:", userError.message);
-      // Handle the error (e.g., delete auth user or notify admin)
-      return encodedRedirect("error", "/signup", "Error creating user account");
-    }
-
-    // Insert free tier subscription
-    const { error: subscriptionError } = await supabase
-      .from('subscriptions')
+      // Insert into users table
+      const { error: userError } = await supabase
+      .from('users')
       .insert({
-        user_id: authData.user.id,
-        status: 'active',
-        plan_id: 'free_tier',
-        current_period_start: now,
-        current_period_end: null, // Null for indefinite free tier
+        id: authData.user.id,
+        email: authData.user.email,
+        username: authData.user.email,
+        stripe_customer_id: customer.id, // Store Stripe customer ID
         created_at: now,
         updated_at: now,
       });
 
-    if (subscriptionError) {
-      console.error("Error creating free tier subscription:", subscriptionError.message);
-      // Handle the error (e.g., delete user entry or notify admin)
-      return encodedRedirect("error", "/signup", "Error setting up free tier");
+      if (userError) {
+        throw new Error("Error creating user in custom table: " + userError.message);
+      }
+
+      // Insert free tier subscription
+      const { error: subscriptionError } = await supabase
+        .from('subscriptions')
+        .insert({
+          user_id: authData.user.id,
+          status: 'active',
+          plan_id: 'free_tier',
+          current_period_start: now,
+          current_period_end: null, // Null for indefinite free tier
+          stripe_customer_id: customer.id, // Store Stripe customer ID
+          created_at: now,
+          updated_at: now,
+        });
+
+      if (subscriptionError) {
+        throw new Error("Error creating free tier subscription: " + subscriptionError.message);
+      }
+    } catch (error) {
+      console.error("Error in user creation process:", error);
+      // TODO: Implement rollback logic here (delete auth user, Stripe customer, etc.)
+      return encodedRedirect("error", "/signup", "Error creating user account");
     }
   }
 

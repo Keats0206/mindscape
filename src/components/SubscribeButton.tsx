@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 const SubscribeButton: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const user_id = "16e23059-d8e8-41b8-89ca-ac0f52efdb3d"
 
   const handleSubscribe = async () => {
     setIsLoading(true);
@@ -16,7 +17,7 @@ const SubscribeButton: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({}),
+        body: JSON.stringify({ userId: user_id }),
       });
 
       if (!response.ok) {
@@ -47,8 +48,10 @@ const SubscribeButton: React.FC = () => {
     <div>
       <Button
         onClick={handleSubscribe}
-        disabled={isLoading}
-        className={`w-full bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+        disabled={isLoading || !user_id}
+        className={`w-full bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded ${
+          isLoading || !user_id ? 'opacity-50 cursor-not-allowed' : ''
+        }`}
       >
         {isLoading ? 'Processing...' : 'Subscribe Now'}
       </Button>

@@ -26,40 +26,40 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="bg-background text-foreground">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <main className={spaceGrotesk.className}>
-            <div className="min-h-screen flex flex-col items-center">
-              <div className="flex-1 w-full flex flex-col items-center">
-                <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-                  <div className="w-full flex justify-between items-center p-3 px-5 text-sm">
-                    <div className='font-medium uppercase text-xl items-center font-semibold'>
-                      <Link href={"/"} className="flex flex-row">
-                        <div>
-                          Genspo
-                        </div>
-                        <div className="text-gray-400">
-                            AI
-                        </div>
-                      </Link>
+      <html lang="en" suppressHydrationWarning>
+        <body className="bg-background text-foreground">
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <main className={spaceGrotesk.className}>
+              <div className="min-h-screen flex flex-col items-center">
+                <div className="flex-1 w-full flex flex-col items-center">
+                  <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
+                    <div className="w-full flex justify-between items-center p-3 px-5 text-sm">
+                      <div className='font-medium uppercase text-xl items-center font-semibold'>
+                        <Link href={"/"} className="flex flex-row">
+                          <div>
+                            Genspo
+                          </div>
+                          <div className="text-gray-400">
+                              AI
+                          </div>
+                        </Link>
+                      </div>
+                      <HeaderAuth />
                     </div>
-                    <HeaderAuth />
+                  </nav>
+                  <div>
+                    {children}
                   </div>
-                </nav>
-                <div>
-                  {children}
                 </div>
               </div>
-            </div>
-          </main>
-        </ThemeProvider>
-      </body>
-    </html>
+            </main>
+          </ThemeProvider>
+        </body>
+      </html>
   );
 }

@@ -1,18 +1,13 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { headers } from 'next/headers';
-import { supabase } from '@/utils/supabase/client';
+import { createClient } from '@/utils/supabase/server';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function POST(req: Request) {
-  console.log('Webhook received');
-
   const body = await req.text();
   const signature = headers().get('Stripe-Signature') as string;
-
-  console.log('Request body:', body);
-  console.log('Stripe-Signature:', signature);
 
   let event: Stripe.Event;
 
@@ -22,71 +17,127 @@ export async function POST(req: Request) {
       signature,
       process.env.STRIPE_WEBHOOK_SECRET!
     );
-    console.log('Event constructed successfully:', event.type);
   } catch (error) {
     console.error('Error verifying webhook:', error);
     return NextResponse.json({ error: 'Webhook signature verification failed' }, { status: 400 });
   }
 
+  console.log('Event received:', event.type);
+
   try {
     switch (event.type) {
       case 'customer.subscription.created':
       case 'customer.subscription.updated':
-        const subscription = event.data.object as Stripe.Subscription;
-        console.log('Processing subscription event:', event.type);
-        console.log('Subscription data:', JSON.stringify(subscription, null, 2));
-        await updateSubscription(subscription);
-        break;
       case 'customer.subscription.deleted':
-        const deletedSubscription = event.data.object as Stripe.Subscription;
-        console.log('Processing subscription deletion event');
-        console.log('Deleted subscription data:', JSON.stringify(deletedSubscription, null, 2));
-        await updateSubscription(deletedSubscription, 'canceled');
+        const subscription = event.data.object as Stripe.Subscription;
+        await handleSubscriptionChange(subscription, event.type);
         break;
+
+      case 'invoice.paid':
+      case 'invoice.payment_succeeded':
+        const invoice = event.data.object as Stripe.Invoice;
+        await handleInvoicePaid(invoice);
+        break;
+
+      case 'invoice.payment_failed':
+        const failedInvoice = event.data.object as Stripe.Invoice;
+        await handleInvoicePaymentFailed(failedInvoice);
+        break;
+
+      case 'payment_method.attached':
+      case 'payment_method.updated':
+      case 'payment_method.detached':
+        const paymentMethod = event.data.object as Stripe.PaymentMethod;
+        await handlePaymentMethodChange(paymentMethod, event.type);
+        break;
+
       default:
         console.log(`Unhandled event type ${event.type}`);
     }
 
-    console.log('Webhook processed successfully');
     return NextResponse.json({ received: true });
   } catch (error) {
     console.error('Error processing webhook:', error);
-    return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 });
+    return NextResponse.json({ error: 'Webhook processing failed, but received' }, { status: 200 });
   }
 }
 
-async function updateSubscription(subscription: Stripe.Subscription, overrideStatus?: string) {
-  console.log('Updating subscription in database');
-  console.log('Subscription ID:', subscription.id);
-  console.log('Customer ID:', subscription.customer);
-  console.log('Status:', overrideStatus || subscription.status);
+async function handleSubscriptionChange(subscription: Stripe.Subscription, eventType: string) {
+  console.log(`Handling ${eventType} for subscription:`, subscription.id);
+
+  const supabase = createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  const user_id = user?.id
+
+  console.log('user_id', user_id)
 
   const subscriptionData = {
-    stripe_subscription_id: subscription.id,
-    stripe_customer_id: subscription.customer as string,
-    status: overrideStatus || subscription.status,
+    user_id: user_id, // Assuming you store user_id in metadata
+    status: eventType === 'customer.subscription.deleted' ? 'canceled' : subscription.status,
     plan_id: subscription.items.data[0].price.id,
-    current_period_start: new Date(subscription.current_period_start * 1000),
-    current_period_end: new Date(subscription.current_period_end * 1000),
+    current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
+    current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+    updated_at: new Date().toISOString(),
+    stripe_customer_id: typeof subscription.customer === 'string' ? subscription.customer : subscription.customer.id,
+    stripe_subscription_id: subscription.id,
+    stripe_price_id: subscription.items.data[0].price.id,
     cancel_at_period_end: subscription.cancel_at_period_end,
-    canceled_at: subscription.canceled_at ? new Date(subscription.canceled_at * 1000) : null,
-    trial_start: subscription.trial_start ? new Date(subscription.trial_start * 1000) : null,
-    trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000) : null,
-    updated_at: new Date(),
+    canceled_at: subscription.canceled_at ? new Date(subscription.canceled_at * 1000).toISOString() : null,
+    trial_start: subscription.trial_start ? new Date(subscription.trial_start * 1000).toISOString() : null,
+    trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
   };
 
-  console.log('Subscription data to be upserted:', JSON.stringify(subscriptionData, null, 2));
-
-  const { error } = await supabase
+  // Upsert to subscriptions table
+  const { error: subscriptionError } = await supabase
     .from('subscriptions')
     .upsert(subscriptionData, {
       onConflict: 'stripe_subscription_id'
     });
 
-  if (error) {
-    console.error('Error updating subscription:', error);
-    throw error;
-  } else {
-    console.log('Subscription updated successfully');
+  if (subscriptionError) throw subscriptionError;
+
+  // Update user's subscription status
+  const { error: userError } = await supabase
+    .from('users')
+    .update({ subscription_status: subscriptionData.status })
+    .eq('id', subscriptionData.user_id);
+
+  if (userError) throw userError;
+
+  console.log(`Updated subscription and user status for user ${subscriptionData.user_id}`);
+}
+
+async function handleInvoicePaid(invoice: Stripe.Invoice) {
+  console.log('Handling paid invoice:', invoice.id);
+  // Update subscription status to active if it's not already
+  if (invoice.subscription) {
+    const supabase = createClient()
+
+    await supabase
+      .from('subscriptions')
+      .update({ status: 'active' })
+      .eq('stripe_subscription_id', invoice.subscription)
+      .eq('status', 'past_due');
   }
+}
+
+async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
+  console.log('Handling failed invoice payment:', invoice.id);
+  if (invoice.subscription) {
+    const supabase = createClient()
+    await supabase
+      .from('subscriptions')
+      .update({ status: 'past_due' })
+      .eq('stripe_subscription_id', invoice.subscription);
+  }
+}
+
+async function handlePaymentMethodChange(paymentMethod: Stripe.PaymentMethod, eventType: string) {
+  console.log(`Handling ${eventType} for payment method:`, paymentMethod.id);
+  // You might want to update payment method information in your database
+  // or take other actions based on the event type
 }
