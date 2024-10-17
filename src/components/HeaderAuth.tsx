@@ -14,8 +14,8 @@ export default async function AuthButton() {
     <div className="flex items-center gap-4">
       <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant={"outline"} className="rounded-full w-10 h-10 flex items-center justify-center bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
-          <span className="text-sm">{user.email?.slice(0,1).toUpperCase()}</span>
+        <Button variant={"outline"} className="cursor-pointer rounded-full w-10 h-10 flex items-center justify-center bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
+          {user.email?.slice(0,1).toUpperCase()}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56 mr-4">
