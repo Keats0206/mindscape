@@ -51,7 +51,7 @@ export default function Home() {
   return (
     <main className='w-screen'>
       <ImageCloud images={images}></ImageCloud>
-      <div className='flex flex-col items-center justify-center w-screen h-screen absolute top-0 left-0'>
+      <div className='-z-10 flex flex-col items-center justify-center w-screen h-screen absolute top-0 left-0'>
          <HyperText 
           className='text-2xl text-center'
           text="Generate infinite"

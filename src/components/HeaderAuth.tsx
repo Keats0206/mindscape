@@ -11,7 +11,10 @@ export default async function AuthButton() {
   } = await createClient().auth.getUser();
 
   return user ? (
-    <div className="flex items-center gap-4">
+    <div className="flex flex-row items-center gap-4">
+      <Link href="/create" className="hover:bg-gray-800 rounded-md p-2">
+        Create
+      </Link>
       <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant={"outline"} className="cursor-pointer rounded-full w-10 h-10 flex items-center justify-center bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">

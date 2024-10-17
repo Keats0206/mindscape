@@ -1,5 +1,7 @@
 "use server";
 
+"use server";
+
 import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
@@ -15,7 +17,7 @@ export async function signUpAction(formData: FormData): Promise<void> {
     return encodedRedirect("error", "/sign-up", "Email and password are required");
   }
 
-  const { error } = await supabase.auth.signUp({
+  const { data: authData, error: authError } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -23,17 +25,57 @@ export async function signUpAction(formData: FormData): Promise<void> {
     },
   });
 
-  if (error) {
-    console.error(error.code + " " + error.message);
-    return encodedRedirect("error", "/sign-up", error.message);
-  } else {
-    return encodedRedirect(
-      "success",
-      "/sign-up",
-      "Thanks for signing up! Please check your email for a verification link.",
-    );
+  if (authError) {
+    console.error(authError.code + " " + authError.message);
+    return encodedRedirect("error", "/sign-up", authError.message);
   }
-};
+
+  // If sign-up is successful, create a user in the custom users table
+  if (authData.user) {
+    const now = new Date().toISOString();
+    
+    // Insert into users table
+    const { error: userError } = await supabase
+      .from('users')
+      .insert({
+        id: authData.user.id,
+        email: authData.user.email,
+        created_at: now,
+        updated_at: now,
+      });
+
+    if (userError) {
+      console.error("Error creating user in custom table:", userError.message);
+      // Handle the error (e.g., delete auth user or notify admin)
+      return encodedRedirect("error", "/sign-up", "Error creating user account");
+    }
+
+    // Insert free tier subscription
+    const { error: subscriptionError } = await supabase
+      .from('subscriptions')
+      .insert({
+        user_id: authData.user.id,
+        status: 'active',
+        plan_id: 'free_tier',
+        current_period_start: now,
+        current_period_end: null, // Null for indefinite free tier
+        created_at: now,
+        updated_at: now,
+      });
+
+    if (subscriptionError) {
+      console.error("Error creating free tier subscription:", subscriptionError.message);
+      // Handle the error (e.g., delete user entry or notify admin)
+      return encodedRedirect("error", "/sign-up", "Error setting up free tier");
+    }
+  }
+
+  return encodedRedirect(
+    "success",
+    "/sign-up",
+    "Thanks for signing up! Please check your email for a verification link.",
+  );
+}
 
 export const signInAction = async (formData: FormData) => {
   const email = formData.get("email") as string;
@@ -49,7 +91,7 @@ export const signInAction = async (formData: FormData) => {
     return encodedRedirect("error", "/signin", error.message);
   }
 
-  return redirect("/protected");
+  return redirect("/profile");
 };
 
 export const forgotPasswordAction = async (formData: FormData) => {

@@ -27,11 +27,11 @@ export async function POST(req: Request) {
       case 'customer.subscription.created':
       case 'customer.subscription.updated':
         const subscription = event.data.object as Stripe.Subscription;
-        await updateUserSubscription(subscription.customer as string, subscription.status);
+        await updateSubscription(subscription);
         break;
       case 'customer.subscription.deleted':
         const deletedSubscription = event.data.object as Stripe.Subscription;
-        await updateUserSubscription(deletedSubscription.customer as string, 'canceled');
+        await updateSubscription(deletedSubscription, 'canceled');
         break;
       // Add more cases as needed
       default:
@@ -45,14 +45,27 @@ export async function POST(req: Request) {
   }
 }
 
-async function updateUserSubscription(stripeCustomerId: string, status: string) {
+async function updateSubscription(subscription: Stripe.Subscription, overrideStatus?: string) {
   const { error } = await supabase
-    .from('users')
-    .update({ subscription_status: status })
-    .eq('stripe_customer_id', stripeCustomerId);
+    .from('subscriptions')
+    .upsert({
+      stripe_subscription_id: subscription.id,
+      stripe_customer_id: subscription.customer as string,
+      status: overrideStatus || subscription.status,
+      plan_id: subscription.items.data[0].price.id,
+      current_period_start: new Date(subscription.current_period_start * 1000),
+      current_period_end: new Date(subscription.current_period_end * 1000),
+      cancel_at_period_end: subscription.cancel_at_period_end,
+      canceled_at: subscription.canceled_at ? new Date(subscription.canceled_at * 1000) : null,
+      trial_start: subscription.trial_start ? new Date(subscription.trial_start * 1000) : null,
+      trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000) : null,
+      updated_at: new Date(),
+    }, {
+      onConflict: 'stripe_subscription_id'
+    });
 
   if (error) {
-    console.error('Error updating user subscription:', error);
+    console.error('Error updating subscription:', error);
     throw error;
   }
 }
