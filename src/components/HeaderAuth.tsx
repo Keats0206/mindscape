@@ -2,7 +2,7 @@ import { signOutAction } from "@/app/actions";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/server";
-import { DropdownMenuGroup, DropdownMenu, DropdownMenuShortcut, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
+import { DropdownMenuGroup, DropdownMenu, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 import { User, CreditCard, LogOut } from "lucide-react";
 
 export default async function AuthButton() {
@@ -12,12 +12,12 @@ export default async function AuthButton() {
 
   return user ? (
     <div className="flex flex-row items-center gap-4">
-      <Link href="/create" className="hover:bg-gray-800 rounded-md p-2">
+      <Link href="/create" className="hover:bg-stone-800 rounded-md p-2 transition-all duration-300">
         Create
       </Link>
       <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant={"outline"} className="cursor-pointer rounded-full w-10 h-10 flex items-center justify-center bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
+        <Button variant={"outline"} className="cursor-pointer rounded-full w-10 h-10 flex items-center justify-center bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:opacity-80 active:scale-90 transition-all duration-300">
           {user.email?.slice(0,1).toUpperCase()}
         </Button>
       </DropdownMenuTrigger>
@@ -43,9 +43,12 @@ export default async function AuthButton() {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={signOutAction} className="cursor-pointer">
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>Log out</span>
-              <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+                  <form action={signOutAction} className="py-0">
+                    <Button type="submit" variant={"ghost"} className="flex items-center justify-center h-5 px-0 py-0 w-full active:bg-transparent active:opacity-80">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Log out</span>
+                    </Button>
+                  </form>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

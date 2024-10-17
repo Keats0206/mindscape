@@ -1,7 +1,5 @@
 "use server";
 
-"use server";
-
 import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
@@ -14,7 +12,7 @@ export async function signUpAction(formData: FormData): Promise<void> {
   const origin = headers().get("origin");
 
   if (!email || !password) {
-    return encodedRedirect("error", "/sign-up", "Email and password are required");
+    return encodedRedirect("error", "/signup", "Email and password are required");
   }
 
   const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -27,27 +25,28 @@ export async function signUpAction(formData: FormData): Promise<void> {
 
   if (authError) {
     console.error(authError.code + " " + authError.message);
-    return encodedRedirect("error", "/sign-up", authError.message);
+    return encodedRedirect("error", "/signup", authError.message);
   }
 
-  // If sign-up is successful, create a user in the custom users table
+  // If signup is successful, create a user in the custom users table
   if (authData.user) {
     const now = new Date().toISOString();
     
     // Insert into users table
     const { error: userError } = await supabase
-      .from('users')
-      .insert({
-        id: authData.user.id,
-        email: authData.user.email,
-        created_at: now,
-        updated_at: now,
-      });
+    .from('users')
+    .insert({
+      id: authData.user.id,
+      email: authData.user.email,
+      username: authData.user.email, // Use email as username or add a separate username field
+      created_at: now,
+      updated_at: now,
+    });
 
     if (userError) {
       console.error("Error creating user in custom table:", userError.message);
       // Handle the error (e.g., delete auth user or notify admin)
-      return encodedRedirect("error", "/sign-up", "Error creating user account");
+      return encodedRedirect("error", "/signup", "Error creating user account");
     }
 
     // Insert free tier subscription
@@ -66,13 +65,13 @@ export async function signUpAction(formData: FormData): Promise<void> {
     if (subscriptionError) {
       console.error("Error creating free tier subscription:", subscriptionError.message);
       // Handle the error (e.g., delete user entry or notify admin)
-      return encodedRedirect("error", "/sign-up", "Error setting up free tier");
+      return encodedRedirect("error", "/signup", "Error setting up free tier");
     }
   }
 
   return encodedRedirect(
     "success",
-    "/sign-up",
+    "/signup",
     "Thanks for signing up! Please check your email for a verification link.",
   );
 }

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import getStripe from '@/utils/stripe/stripe';
 import { Button } from '@/components/ui/button';
+
 const SubscribeButton: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

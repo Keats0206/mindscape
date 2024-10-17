@@ -29,7 +29,7 @@ export default async function Profile() {
   const planName = subscription?.plan_name || 'Free';
 
   return (
-    <div className="flex-1 w-full flex flex-col items-center gap-12 max-w-3xl mx-auto">
+    <div className="mt-24 flex-1 w-full flex flex-col items-center gap-12 max-w-3xl mx-auto">
       <Avatar className="w-24 h-24">
         <AvatarImage src={user.email} />
         <AvatarFallback>
@@ -46,7 +46,7 @@ export default async function Profile() {
           {planName}  
           </p>
           <Link href="/pricing">  
-            <Button variant={"outline"}>Upgrade Your Plan</Button>
+            <Button variant={"outline"} className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white">Upgrade Your Plan</Button>
           </Link>
         <div className="absolute bottom-4 flex flex-col gap-2">
           <Link href="genspo.com/terms-ofservice" className="text-sm text-foreground/60 hover:underline">Terms of Service</Link>

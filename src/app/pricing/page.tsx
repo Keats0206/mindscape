@@ -6,7 +6,7 @@ import SubscribeButton from "@/components/SubscribeButton";
 
 export default function Pricing() {
   return (
-    <div className="flex items-center justify-center">
+    <div className="mt-24 flex items-center justify-center">
       <div className="max-w-lg w-full flex flex-col space-y-4 items-center">
           <h1 className="text-2xl font-semibold pb-4">Upgrade to try beta</h1>
           <Card className="p-6 rounded-md">

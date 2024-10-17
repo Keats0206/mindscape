@@ -14,5 +14,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard"], // Apply middleware only to /dashboard route
+  matcher: ["/create"], // Apply middleware only to /dashboard route
 };

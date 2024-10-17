@@ -7,11 +7,11 @@ import Link from "next/link";
 
 export default function Login({ searchParams }: { searchParams: Message }) {
   return (
-    <form className="flex-1 flex flex-col min-w-64">
+    <form className="flex-1 flex flex-col w-96  mt-24">
       <h1 className="text-2xl font-medium">Sign in</h1>
       <p className="text-sm text-foreground">
         Dont have an account?{" "}
-        <Link className="text-foreground font-medium underline" href="/sign-up">
+        <Link className="text-foreground font-medium underline" href="/signup">
           Sign up
         </Link>
       </p>
