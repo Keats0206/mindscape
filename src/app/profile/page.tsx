@@ -5,11 +5,14 @@ import React from 'react';
 import { useUser } from '@/context/UserProvider';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import LoadingSpinner from '@/components/ui/loading-spinner';
 
 const ProfileComponent = () => {
   const { userData } = useUser();
 
-  if (!userData) return <div className="flex items-center justify-center h-screen">Loading...</div>;
+  if (!userData) return <div className="flex items-center justify-center h-screen">
+     <LoadingSpinner />
+  </div>;
 
   const initial = userData.full_name ? userData.full_name[0].toUpperCase() : userData.email[0].toUpperCase();
   const isFreeUser = !userData.subscription || userData.subscription.plan_id === 'free_tier';

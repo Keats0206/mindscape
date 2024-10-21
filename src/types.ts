@@ -67,3 +67,14 @@ export function createCompleteUserData(
     subscription,
   };
 }
+
+export interface Post {
+  id: string;
+  result_url: string;
+  prompt: string;
+}
+
+export interface Category {
+  name: string;
+  posts: Post[];
+}

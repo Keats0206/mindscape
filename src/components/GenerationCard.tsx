@@ -33,15 +33,14 @@ export const GenerationCard = ({ generation, isPending = false }: { generation: 
             />
           )}
         </CardHeader>
-        <CardContent className="px-4 py-2">
-          <div className="text-gray-500 font-bold pb-1">Prompt:</div>
+        <CardContent className="px-4 py-2 h-full flex flex-col">
           {isPending ? (
             <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
           ) : (
-            <div>{generation.prompt}</div>
+            <div className="h-full text-gray-500 text-sm pb-2">{generation.prompt}</div>
           )}
         </CardContent>
-        <CardContent className="pt-2 flex flex-wrap px-2 gap-1 pb-2">
+        <CardContent className="flex flex-wrap px-2 gap-1 pb-2">
           <Button 
             className="w-full" 
             variant="outline" 

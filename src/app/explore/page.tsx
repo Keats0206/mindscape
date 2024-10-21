@@ -1,37 +1,103 @@
-import React from 'react';
+"use client";
+
+import React, { useState, useEffect } from 'react';
+import { supabase } from "@/utils/supabase/client";
+import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import LoadingSpinner from '@/components/ui/loading-spinner';
+import { Category, Post } from '@/types';
+import { featuredTags } from '@/data/categoryTags';
 
 export default function ExplorePage() {
-  const featuredCategories = [
-    {
-      name: "Category 1",
-      posts: [0,1,2,3,4,5]
-    },
-    {
-      name: "Category 2",
-      posts: [0,1,2,3,4,5]
-    }
-  ]
+  const [featuredCategories, setFeaturedCategories] = useState<Category[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const fetchedCategories: Category[] = [];
+
+        for (const tag of featuredTags) {
+          const { data, error } = await supabase
+            .from('generations')
+            .select('id, result_url, prompt')
+            .contains('tags', [tag])
+            .order('created_at', { ascending: false })
+            .limit(6);
+
+          if (error) throw error;
+
+          if (data && data.length > 0) {
+            fetchedCategories.push({
+              name: tag,
+              posts: data as Post[]
+            });
+          }
+        }
+
+        setFeaturedCategories(fetchedCategories);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred while fetching data');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  if (isLoading) {
+    return <div className="flex justify-center items-center h-screen">
+      <LoadingSpinner />
+    </div>;
+  }
+
+  if (error) {
+    return <div className="flex justify-center items-center h-screen text-red-500">{error}</div>;
+  }
 
   return (
     <div className="flex flex-col gap-4 w-screen px-4 sm:px-6 lg:px-8">
       <div className="w-full flex flex-col gap-2 h-48 items-center justify-center">
-        <h1 className="text-4xl font-medium">Trending Categories</h1>
-        <p className="text-xl">Discover the latest trends of creation on Genspo</p>
+        <h1 className="text-4xl font-medium pb-2">Featured Categories</h1>
+        <p className="text-xl text-gray-500 text-center">Explore our curated selection of home decor styles</p>
       </div>
-      {featuredCategories.map((category) => (
-        <div key={category.name} className="flex flex-col rounded-sm space-y-2">
-          <div className="flex flex-row w-full justify-between">
-            <h2 className="text-2xl">#{category.name}</h2>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
-            {category.posts.map((imageIndex) => (
-              <div key={imageIndex} className="flex items-center justify-center aspect-square bg-stone-200 rounded-sm">
-                Image {imageIndex + 1}
-              </div>
-            ))}
-          </div>
+      {isLoading ? (
+        <div className="flex justify-center items-center h-screen">
+          <LoadingSpinner />
         </div>
-      ))}
+      ):(
+        <>
+        {featuredCategories.map((category) => (
+          <Link href={`/explore/${category.name.replace(' ', '-')}`} key={category.name}>
+            <div key={category.name} className="transition-all duration-300 hover:shadow-md hover:bg-stone-100 hover:shadow-stone-200 flex flex-col rounded-sm space-y-2 border border-stone-200 p-4" >
+              <div className="flex flex-row w-full justify-between">
+                <h2 className="text-2xl capitalize font-medium">{category.name}</h2>
+                <Button variant="outline">View All</Button>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
+                {category.posts.map((post) => (
+                  <div key={post.id} className="flex items-center justify-center aspect-square bg-stone-200 rounded-sm overflow-hidden">
+                    <Image
+                      src={post.result_url}
+                      alt={post.prompt}
+                      width={200}
+                      height={200}
+                      className="object-cover w-full h-full"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Link>
+        ))}
+        </>
+      )}
     </div>
   );
 }

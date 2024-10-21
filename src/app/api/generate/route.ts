@@ -1,11 +1,16 @@
+// app/api/generate/route.ts
 import { NextResponse } from "next/server";
 import Replicate from "replicate";
 
 export async function GET(request: Request) {
-  const replicate = new Replicate();
   const { searchParams } = new URL(request.url);
   const prompt = searchParams.get("text");
 
+  if (!prompt) {
+    return NextResponse.json({ error: "Missing prompt" }, { status: 400 });
+  }
+
+  const replicate = new Replicate();
   const model = "black-forest-labs/flux-schnell";
   const input = {
     prompt,
@@ -18,18 +23,25 @@ export async function GET(request: Request) {
     num_inference_steps: 2,
   };
 
-  const output = await replicate.run(model, { input }) as string[];
-  const headers = new Headers();
-  headers.set("Content-Type", "image/*");
-  headers.set(
-    "Cache-Control",
-    "no-store, no-cache, must-revalidate, proxy-revalidate"
-  );
-  headers.set("Pragma", "no-cache");
-  headers.set("Expires", "0");
-  return new NextResponse(output[0], {
-    status: 200,
-    statusText: "OK",
-    headers,
-  });
+  try {
+    const output = await replicate.run(model, { input }) as string[];
+
+    if (output && output.length > 0) {
+      const imageUrl = output[0];
+      const imageResponse = await fetch(imageUrl);
+      const imageBlob = await imageResponse.blob();
+
+      return new NextResponse(imageBlob, {
+        status: 200,
+        headers: {
+          'Content-Type': imageBlob.type,
+        },
+      });
+    } else {
+      return NextResponse.json({ error: "Failed to generate image" }, { status: 500 });
+    }
+  } catch (error) {
+    console.error("Error generating image:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
 }

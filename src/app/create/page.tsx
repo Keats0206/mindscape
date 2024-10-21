@@ -1,55 +1,117 @@
 "use client";
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-// import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Skeleton } from '@/components/ui/skeleton';
-// import ModelSelector from '@/components/ModelSelector';
 import Image from "next/image";
 import { ShuffleIcon } from '@radix-ui/react-icons';
 import { imageOfOptions, dressedInOptions, wearingOptions, shotInOptions, framedAsOptions } from './promptData';
 import { Switch } from '@/components/ui/switch';
 import { models } from './modelData';
+import { useUser } from "@/context/UserProvider"
+import { supabase } from "@/utils/supabase/client"
 
-function useImageGeneration() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const generateImage = useCallback(async (text: string) => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(`/api/generate?text=${encodeURIComponent(text)}`);
-      if (!response.ok) {
-        throw new Error('Failed to generate image');
+const useImageOperations = () => {
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+  
+    const generateImage = useCallback(async (text: string) => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(`/api/generate?text=${encodeURIComponent(text)}`);
+        if (!response.ok) {
+          throw new Error('Failed to generate image');
+        }
+        const blob = await response.blob();
+        // Convert blob to base64
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred');
+        return null;
+      } finally {
+        setIsLoading(false);
       }
-      const blob = await response.blob();
-      return URL.createObjectURL(blob);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-      return null;
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  return { generateImage, isLoading, error };
-}
+    }, []);
+  
+    const storeGeneration = useCallback(async (
+      userId: string | undefined, 
+      prompt: string, 
+      imageData: string, 
+      modelUsed: string, 
+      isPublic: boolean, 
+      tags: string[]
+    ) => {
+      try {
+        const response = await fetch('/api/store', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId,
+            prompt,
+            imageData,
+            modelUsed,
+            isPublic,
+            tags,
+          }),
+        });
+        if (!response.ok) throw new Error('Failed to store generation');
+        return await response.json();
+      } catch (err) {
+        console.error('Error storing generation:', err);
+      }
+    }, []);
+  
+    return { generateImage, storeGeneration, isLoading, error };
+};
 
 export default function Create() {
   const activeModel = models[1];
-
   const [generatedItems, setGeneratedItems] = useState<{text: string, image: string}[]>([]);
-  const { generateImage, isLoading, error } = useImageGeneration();
+  const { generateImage, storeGeneration, isLoading, error } = useImageOperations();
   const [prompt, setPrompt] = useState<string>("");
+  const [isPublic,] = useState<boolean>(true);
 
   const [imageOf, setImageOf] = useState<string>("");
   const [dressedIn, setDressedIn] = useState<string>("");
   const [wearing, setWearing] = useState<string>("");
   const [shotIn, setShotIn] = useState<string>("");
   const [framedAs, setFramedAs] = useState<string>("");
+
+  const userId = useUser().userData?.id;
+
+  // const [isGenerating, setIsGenerating] = useState(false);
+
+  useEffect(() => {
+    const fetchGenerations = async () => {
+      if (!userId) return;
+      const { data, error } = await supabase
+        .from('generations')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      if (error) {
+        console.error('Error fetching generations:', error);
+      } else if (data) {
+        setGeneratedItems(data.map(gen => ({
+          text: gen.prompt,
+          image: gen.result_url
+        })));
+      }
+    };
+
+    fetchGenerations();
+  }, [userId]);
 
   const handleShuffle = () => {
     const newImageOf = imageOfOptions[Math.floor(Math.random() * imageOfOptions.length)];
@@ -69,11 +131,33 @@ export default function Create() {
   }
 
   const handleGenerate = async () => {
+    // setIsGenerating(true);
     const currentPrompt = `${imageOf} ${dressedIn} ${wearing} ${shotIn} ${framedAs}`.trim();
-    setPrompt(currentPrompt); // Update the prompt state for consistency
-    const newImage = await generateImage(currentPrompt);
-    if (newImage) {
-      setGeneratedItems(prev => [{ text: currentPrompt, image: newImage }, ...prev]);
+    setPrompt(currentPrompt);
+    try {
+      const imageData = await generateImage(currentPrompt);
+      if (imageData) {
+        const tags = [imageOf, dressedIn, wearing, shotIn, framedAs].filter(Boolean);
+        // Update local state immediately
+        setGeneratedItems(prev => [{
+          text: currentPrompt,
+          image: imageData as string
+        }, ...prev]);
+        // Store the generation
+        const result = await storeGeneration(userId, currentPrompt, imageData as string, activeModel.name, isPublic, tags);
+        if (result && result.data) {
+          // Update with the stored data if needed
+          setGeneratedItems(prev => {
+            const updatedItems = [...prev];
+            updatedItems[0] = { text: currentPrompt, image: result.data.result_url };
+            return updatedItems;
+          });
+        }
+      }
+    } catch (err) {
+      console.error('Error generating image:', err);
+    } finally {
+      // setIsGenerating(false);
     }
   };
 
@@ -123,19 +207,15 @@ export default function Create() {
         </div>
         <span className="mt-0 text-xs text-gray-500">All creations while in beta are public</span>
       </div>
+      {/* Right panel */}
       <div className="flex-1 p-4 overflow-y-auto">
         {error && (
           <Alert variant="destructive" className="mb-4">
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
+        <div className='text-lg font-bold mb-2'>Generations</div>
         <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
-         {isLoading && (
-            <div className="flex flex-col items-center w-full h-full">
-              <Skeleton className="w-full rounded shadow-lg aspect-square" />
-              <Skeleton className="mt-2 h-4 w-3/4" />
-            </div>
-          )}
           {generatedItems.map(({ text, image }, index) => (
             <div key={index} className="text-center flex flex-col items-center w-full h-full">
               <Image
@@ -146,6 +226,7 @@ export default function Create() {
                 unoptimized
                 className="rounded shadow-lg"
               />
+              <p className="mt-2 text-sm text-gray-600">{text}</p>
             </div>
           ))}
         </div>
