@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import getStripe from '@/utils/stripe/stripe';
 import { Button } from '@/components/ui/button';
+import { useUser } from '@/context/UserProvider';
 
 const SubscribeButton: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const user_id = "16e23059-d8e8-41b8-89ca-ac0f52efdb3d"
+  const { userData } = useUser();
+
+  const user_id = userData?.id;
 
   const handleSubscribe = async () => {
     setIsLoading(true);

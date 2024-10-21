@@ -1,9 +1,9 @@
 import { createClient } from '@/utils/supabase/server';
 import { CompleteUserData, Subscription, UserDetails, createCompleteUserData } from '@/types';
 
-export async function getUserData(): Promise<CompleteUserData | null> {
+export async function getUserData(): Promise<CompleteUserData | null> {  
   const supabase = createClient();
-  
+
   try {
     const { data: { user }, error: userError } = await supabase.auth.getUser();
   

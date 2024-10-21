@@ -15,9 +15,7 @@ export default function Pricing() {
             <p className="text-sm text-neutral-400 pb-4">
               Unlock the full potential of AI-generated inspiration
             </p>
-
             <SubscribeButton />
-
             <div className="flex flex-col my-4 space-y-2 text-sm">
               <div className="flex-row flex items-center"><CheckCircle className="w-4 h-4 mr-2" /> Unlimited AI image generations</div>
               <div className="flex-row flex items-center"><CheckCircle className="w-4 h-4 mr-2" /> Access to curated visual collections</div>
@@ -26,9 +24,7 @@ export default function Pricing() {
               <div className="flex-row flex items-center"><CheckCircle className="w-4 h-4 mr-2" /> Access to Pro-only collections and trends</div>
               <div className="flex-row flex items-center"><CheckCircle className="w-4 h-4 mr-2" /> Early access to new features</div>
             </div>
-
             <div className="border-t border-gray-800 pb-4"></div>
-
             <div className="pt-4 flex flex-col space-y-2 text-center text-xs text-neutral-500">
               <a href="#" className="hover:underline">
                 Need help with a billing issue?

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/server";
 import { DropdownMenuGroup, DropdownMenu, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
-import { User, CreditCard, LogOut } from "lucide-react";
+import { User, LogOut } from "lucide-react";
 
 export default async function AuthButton() {
   const {
@@ -37,21 +37,15 @@ export default async function AuthButton() {
                   <span>Profile</span>
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Link href="/profile" className="w-full flex">
-                  <CreditCard className="mr-2 h-4 w-4" />
-                  <span>Billing</span>
-                </Link>
-              </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={signOutAction} className="cursor-pointer">
-                  <form action={signOutAction} className="py-0">
-                    <Button type="submit" variant={"ghost"} className="flex items-center justify-center h-5 px-0 py-0 w-full active:bg-transparent active:opacity-80">
-                      <LogOut className="mr-2 h-4 w-4" />
-                      <span>Log out</span>
-                    </Button>
-                  </form>
+            <DropdownMenuItem>
+                <form action={signOutAction} className="py-0">
+                  <Button type="submit" variant={"ghost"} className="flex items-center justify-center h-5 px-0 py-0 w-full active:bg-transparent active:opacity-80">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Log out</span>
+                  </Button>
+                </form>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
