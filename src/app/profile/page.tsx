@@ -1,57 +1,47 @@
-import { createClient } from "@/utils/supabase/server";
-import { redirect } from "next/navigation";
-import Link from "next/link";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+// components/ProfileComponent.tsx
+'use client';
 
-export default async function Profile() {
-  const supabase = createClient();
+import React from 'react';
+import { useUser } from '@/context/UserProvider';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+const ProfileComponent = () => {
+  const { userData } = useUser();
 
-  if (!user) {
-    return redirect("/signin");
-  }
+  if (!userData) return <div className="flex items-center justify-center h-screen">Loading...</div>;
 
-  // Fetch the user's subscription information
-  const { data: subscription, error } = await supabase
-    .from('subscriptions')
-    .select('*')
-    .eq('user_id', user.id)
-    .single();
-
-  if (error && error.code !== 'PGRST116') {
-    console.error('Error fetching subscription:', error);
-  }
-
-  const planName = subscription?.plan_name || 'Free';
+  const initial = userData.full_name ? userData.full_name[0].toUpperCase() : userData.email[0].toUpperCase();
+  const isFreeUser = !userData.subscription || userData.subscription.plan_id === 'free_tier';
 
   return (
-    <div className="mt-24 flex-1 w-full flex flex-col items-center gap-12 max-w-3xl mx-auto">
-      <Avatar className="w-24 h-24">
-        <AvatarImage src={user.email} />
-        <AvatarFallback>
-          {user.email?.slice(0,1).toUpperCase()}
-        </AvatarFallback>
-      </Avatar>
-      <div className="flex flex-col items-center gap-2">
-        <h1 className="text-2xl font-medium">{user.email}</h1>
-        <p className="text-sm text-foreground/60">{user.email}</p>
-      </div>
-      <div className="flex flex-col items-center gap-2">
-        <h2 className="text-xl font-medium">Subscription</h2>
-        <p className="text-sm text-foreground/60">
-          {planName}  
-          </p>
-          <Link href="/pricing">  
-            <Button variant={"outline"} className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white">Upgrade Your Plan</Button>
+    <div className="flex flex-col pt-24">
+      <div className="bg-white space-y-4 w-64">
+        {userData.profile_picture_url ? (
+          <img 
+            src={userData.profile_picture_url} 
+            alt="Profile Picture" 
+            className="w-24 h-24 rounded-full mx-auto"
+          />
+        ) : (
+          <div className="w-24 h-24 rounded-full mx-auto flex items-center justify-center text-3xl font-bold text-white bg-gradient-to-r from-blue-500 to-purple-500">
+            {initial}
+          </div>
+        )}
+        <h2 className="text-xl font-semibold text-center">{userData.full_name || userData.email}</h2>
+        <p className="text-center text-gray-600">
+          {isFreeUser ? 'Free Tier' : `${userData.subscription?.plan_id} Tier`}
+        </p>
+        {isFreeUser && (
+          <Link href="/pricing" className="block w-full">
+            <Button className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+              Upgrade
+            </Button>
           </Link>
-        <div className="absolute bottom-4 flex flex-col gap-2">
-          <Link href="genspo.com/terms-ofservice" className="text-sm text-foreground/60 hover:underline">Terms of Service</Link>
-        </div>
+        )}
       </div>
     </div>
   );
-}
+};
+
+export default ProfileComponent;
