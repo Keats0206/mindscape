@@ -3,10 +3,17 @@
 import { Card } from "@/components/ui/card";
 import { CheckCircle } from "lucide-react";
 import SubscribeButton from "@/components/SubscribeButton";
-
+import { useUser } from "@/context/UserProvider";
+import { redirect } from "next/navigation";
 export default function Pricing() {
+  const { userData } = useUser();
+
+  if (!userData) {
+    redirect("/");
+  }
+
   return (
-    <div className="mt-24 flex items-center justify-center">
+    <div className="pt-32 flex items-center justify-center">
       <div className="max-w-lg w-full flex flex-col space-y-4 items-center">
           <h1 className="text-2xl font-semibold pb-4">Upgrade to try beta</h1>
           <Card className="p-6 rounded-md">
@@ -19,9 +26,7 @@ export default function Pricing() {
             <div className="flex flex-col my-4 space-y-2 text-sm">
               <div className="flex-row flex items-center"><CheckCircle className="w-4 h-4 mr-2" /> Unlimited AI image generations</div>
               <div className="flex-row flex items-center"><CheckCircle className="w-4 h-4 mr-2" /> Access to curated visual collections</div>
-              <div className="flex-row flex items-center"><CheckCircle className="w-4 h-4 mr-2" /> Save, organize, and share boards with collaborators</div>
-              <div className="flex-row flex items-center"><CheckCircle className="w-4 h-4 mr-2" /> Higher resolution downloads for design use</div>
-              <div className="flex-row flex items-center"><CheckCircle className="w-4 h-4 mr-2" /> Access to Pro-only collections and trends</div>
+              <div className="flex-row flex items-center"><CheckCircle className="w-4 h-4 mr-2" /> Higher resolution downloads</div>
               <div className="flex-row flex items-center"><CheckCircle className="w-4 h-4 mr-2" /> Early access to new features</div>
             </div>
             <div className="border-t border-gray-800 pb-4"></div>

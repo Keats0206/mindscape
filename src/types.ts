@@ -78,3 +78,10 @@ export interface Category {
   name: string;
   posts: Post[];
 }
+export interface Model {
+  id: number;
+  image: string;
+  name: string;
+  value: string;
+  description: string;
+}

@@ -40,9 +40,9 @@ export default async function RootLayout({
           >
             <UserProvider initialData={userData}>
               <main className={dmSans.className}>
-                <div className="min-h-screen flex flex-col items-center">
-                  <div className="flex-1 w-full flex flex-col items-center">
-                    <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
+                <div className="w-screen h-screen flex flex-col items-center">
+                  <div className="flex-1 w-full h-full flex flex-col items-center">
+                    <nav className="bg-white absolute top-0 w-full flex justify-center border-b border-b-foreground/10 h-16">
                       <div className="w-full flex justify-between items-center px-8 text-sm">
                         <div className='font-medium uppercase text-xl items-center font-semibold'>
                           <Link href={"/"} className="flex flex-row">
@@ -57,20 +57,12 @@ export default async function RootLayout({
                         <HeaderAuth />
                       </div>
                     </nav>
-                    <div>
+                    <div className="h-full w-full">
                       {children}
                     </div>
                   </div>
                 </div>
               </main>
-              <div className="h-16 flex justify-between items-center text-xs text-gray-500 px-8">
-                <div className="hover:text-green-500">
-                  <Link href="https://pekeating.com">Built by Pete in NYC</Link>
-                </div>
-                <div className="text-gray-500 text-xs">
-                  RLY LLC
-                </div>
-              </div>
             </UserProvider>
           </ThemeProvider>
         </body>

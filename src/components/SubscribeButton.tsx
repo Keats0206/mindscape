@@ -51,7 +51,7 @@ const SubscribeButton: React.FC = () => {
     <div>
       <Button
         onClick={handleSubscribe}
-        disabled={isLoading || !user_id}
+        disabled={isLoading}
         className={`w-full bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded ${
           isLoading || !user_id ? 'opacity-50 cursor-not-allowed' : ''
         }`}

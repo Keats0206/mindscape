@@ -1,11 +1,5 @@
-export interface Model {
-    id: number;
-    image: string;
-    name: string;
-    value: string;
-    description: string;
-  }
-  
+import { Model } from '@/types';
+
 export const models: Model[] = [
     {
     id: 0,

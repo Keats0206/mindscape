@@ -18,9 +18,9 @@ export async function GET(request: Request) {
     num_outputs: 1,
     aspect_ratio: "1:1",
     output_format: "webp",
-    output_quality: 80,
-    megapixels: "0.25",
-    num_inference_steps: 2,
+    output_quality: 100,
+    megapixels: "1",
+    num_inference_steps: 4,
   };
 
   try {

@@ -52,6 +52,7 @@ export async function signUpAction(formData: FormData): Promise<void> {
         stripe_customer_id: customer.id, // Store Stripe customer ID
         created_at: now,
         updated_at: now,
+        subscription_status: 'free_tier',
       });
 
       if (userError) {

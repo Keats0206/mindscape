@@ -15,9 +15,6 @@ export default async function AuthButton() {
        <Link href="/explore" className="hover:bg-stone-100 rounded-md p-2 transition-all duration-300">
         Explore
       </Link>
-      <Link href="/create" className="hover:bg-stone-100 rounded-md p-2 transition-all duration-300">
-        Create
-      </Link>
       <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant={"outline"} className="cursor-pointer rounded-full w-10 h-10 flex items-center justify-center bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:opacity-80 active:scale-90 transition-all duration-300">
@@ -53,7 +50,7 @@ export default async function AuthButton() {
   ) : (
     <div className="flex gap-2">
       <Button asChild size="sm" variant={"outline"}>
-        <Link href="/signin">Sign in</Link>
+        <Link href="/login">Login</Link>
       </Button>
       <Button asChild size="sm" variant={"default"}>
         <Link href="/signup">Sign up</Link>

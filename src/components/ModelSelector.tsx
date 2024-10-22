@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
-import { Model } from '@/app/create/modelData';
+import { Model } from '@/types';
 
 const ModelSelector = ({ models }: { models: Model[] }) => {
   const [isOpen, setIsOpen] = useState(false);
