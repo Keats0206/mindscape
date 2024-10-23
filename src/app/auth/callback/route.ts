@@ -39,7 +39,7 @@ export async function GET(request: Request) {
   } catch (err) {
     console.error("Callback error:", err);
     // Get origin from request if available, otherwise fallback to a default
-    const fallbackOrigin = request.url ? new URL(request.url).origin : process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
+    const fallbackOrigin = request.url ? new URL(request.url).origin : process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
     return NextResponse.redirect(`${fallbackOrigin}/login?error=unknown`);
   }
 }
