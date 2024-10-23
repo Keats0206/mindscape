@@ -17,6 +17,8 @@ import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useGenerationCount } from '@/hooks/useGenerationCount';
 import { CompleteUserData } from '@/types';
+import { Dialog, DialogTrigger, DialogContent } from '@/components/ui/dialog';
+import { Download, LinkIcon } from 'lucide-react';
 
 const useImageOperations = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -338,17 +340,52 @@ export default function AppContent({ initialUserData }: { initialUserData: Compl
                 </div>
               )}
               {generatedItems.map(({ text, image }, index) => (
-                <div key={index} className="text-center flex flex-col items-center w-full">
-                  <Image
-                    src={image}
-                    alt={text}
-                    width={512}
-                    height={512}
-                    unoptimized
-                    className="rounded-xl"
-                  />
-                  <p className="mt-2 text-sm text-gray-600">{text}</p>
-                </div>
+                  <Dialog key={index}>
+                      <DialogTrigger>
+                        <div className="text-center flex flex-col items-center w-full">
+                        <Image
+                          src={image}
+                            alt={text}
+                            width={512}
+                            height={512}
+                            unoptimized
+                            className="rounded-xl"
+                          />
+                      <p className="mt-2 text-sm text-gray-600">{text}</p>
+                    </div>
+                    </DialogTrigger>
+                    <DialogContent className=' h-screen max-w-screen'> 
+                        <div className='pt-12 flex w-full h-full flex flex-col items-center'>
+                          <Image
+                            src={image}
+                            alt={text}
+                            width={720}
+                            height={720}
+                            unoptimized
+                            className="rounded-xl"
+                          />
+                          <p className="mt-2 text-sm text-gray-600 text-center">{text}</p>
+                          <div className='pt-4 flex flex-row gap-2'>
+                            <Button variant="outline" onClick={() => {
+                                const link = window.location.href;
+                                const a = document.createElement('a');
+                                a.href = link;
+                                a.download = `${text}.png`;
+                                a.click();
+                              }}>
+                                <Download className="h-4 w-4 mr-2" />
+                                  Download
+                             </Button>
+                            <Button variant="outline" onClick={() => {
+                              navigator.clipboard.writeText(window.location.href);
+                            }}>
+                              <LinkIcon className="h-4 w-4 mr-2" />
+                                Copy Link
+                            </Button>
+                          </div>
+                        </div>
+                    </DialogContent>
+                  </Dialog>
               ))}
           </div>
         </div>
