@@ -11,7 +11,7 @@ interface WordRotateProps {
   className?: string;
 }
 
-export default function WordRotate({
+export function WordRotate({
   words,
   duration = 2500,
   framerProps = {

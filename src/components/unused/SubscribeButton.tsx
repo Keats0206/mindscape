@@ -56,7 +56,7 @@ const SubscribeButton: React.FC = () => {
           isLoading || !user_id ? 'opacity-50 cursor-not-allowed' : ''
         }`}
       >
-        {isLoading ? 'Processing...' : 'Subscribe Now'}
+        {isLoading ? 'Processing...' : 'Upgrade'}
       </Button>
       {error && <p className="text-red-500 mt-2">{error}</p>}
     </div>

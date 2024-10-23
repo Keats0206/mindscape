@@ -62,9 +62,9 @@ export default function ExplorePage() {
   }
 
   return (
-    <div className="flex flex-col gap-4 w-screen px-4 sm:px-6 lg:px-8">
-      <div className="w-full flex flex-col gap-2 h-48 items-center justify-center">
-        <h1 className="text-4xl font-medium pb-2">Featured Categories</h1>
+    <div className="flex flex-col gap-4 w-screen px-4 sm:px-6 lg:px-8 pt-16">
+      <div className="w-full flex flex-col gap-2 h-72 items-center justify-center">
+        <h1 className="text-4xl font-bold pb-2">Featured Categories</h1>
         <p className="text-xl text-gray-500 text-center">Explore our curated selection of home decor styles</p>
       </div>
       {isLoading ? (
@@ -72,7 +72,7 @@ export default function ExplorePage() {
           <LoadingSpinner />
         </div>
       ):(
-        <>
+        <div className="w-full flex flex-col gap-4 pb-16">
         {featuredCategories.map((category) => (
           <Link href={`/explore/${category.name.replace(' ', '-')}`} key={category.name}>
             <div key={category.name} className="transition-all duration-300 hover:shadow-md hover:bg-stone-100 hover:shadow-stone-200 flex flex-col rounded-sm space-y-2 border border-stone-200 p-4" >
@@ -95,8 +95,8 @@ export default function ExplorePage() {
               </div>
             </div>
           </Link>
-        ))}
-        </>
+          ))}
+        </div>
       )}
     </div>
   );

@@ -6,7 +6,7 @@ import { useUser } from '@/context/UserProvider';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import LoadingSpinner from '@/components/ui/loading-spinner';
-
+import ManageSubscriptionButton from '@/components/ManageSubscriptionButton';
 const ProfileComponent = () => {
   const { userData } = useUser();
 
@@ -15,7 +15,8 @@ const ProfileComponent = () => {
   </div>;
 
   const initial = userData.full_name ? userData.full_name[0].toUpperCase() : userData.email[0].toUpperCase();
-  const isFreeUser = !userData.subscription || userData.subscription.plan_id === 'free_tier';
+  const isProUser = userData.subscription_status === 'active';
+  const didCancel = userData.subscription?.cancel_at_period_end === true;
 
   return (
     <div className="flex flex-col items-center justify-center w-full h-full">
@@ -33,20 +34,21 @@ const ProfileComponent = () => {
         )}
         <h2 className="font-semibold text-center">{userData.full_name || userData.email}</h2>
         <p className="text-center text-gray-600">
-          {isFreeUser ? 'Free Tier' : `Pro Plan`}
+          {!isProUser ? 'Free Tier' : `Pro Plan`}
         </p>
-        {isFreeUser ? (
+        {!isProUser ? (
           <Link href="/pricing">
             <Button>
               Upgrade
             </Button>
           </Link>
         ) : (
-          <Link href="/profile">
-            <Button>
-              Manage Subscription
-            </Button>
-          </Link>
+          <ManageSubscriptionButton />
+        )}
+        {didCancel && isProUser && (
+          <div className="text-xs text-center text-red-600">
+            Your subscription has been canceled and will end after the current billing period.
+          </div>
         )}
         <div className='pt-24 flex flex-row items-center gap-2'>
           <div className='text-sm text-gray-500 hover:underline'>Terms of Service</div>

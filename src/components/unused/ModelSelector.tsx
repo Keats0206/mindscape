@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { Model } from '@/types';
 
-const ModelSelector = ({ models }: { models: Model[] }) => {
+export const ModelSelector = ({ models }: { models: Model[] }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeModel, setActiveModel] = useState(models[0]);
   
@@ -50,5 +50,3 @@ const ModelSelector = ({ models }: { models: Model[] }) => {
     </Popover>
   );
 };
-
-export default ModelSelector;

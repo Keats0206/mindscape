@@ -2,7 +2,7 @@
 
 import { Card } from "@/components/ui/card";
 import { CheckCircle } from "lucide-react";
-import SubscribeButton from "@/components/SubscribeButton";
+import SubscribeButton from "@/components/unused/SubscribeButton";
 import { useUser } from "@/context/UserProvider";
 import { redirect } from "next/navigation";
 export default function Pricing() {

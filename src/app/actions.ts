@@ -52,7 +52,7 @@ export async function signUpAction(formData: FormData): Promise<void> {
         stripe_customer_id: customer.id, // Store Stripe customer ID
         created_at: now,
         updated_at: now,
-        subscription_status: 'free_tier',
+        subscription_status: 'trialing',
       });
 
       if (userError) {
@@ -64,8 +64,8 @@ export async function signUpAction(formData: FormData): Promise<void> {
         .from('subscriptions')
         .insert({
           user_id: authData.user.id,
-          status: 'active',
-          plan_id: 'free_tier',
+          status: 'inactice',
+          plan_id: 'trialing',
           current_period_start: now,
           current_period_end: null, // Null for indefinite free tier
           stripe_customer_id: customer.id, // Store Stripe customer ID
@@ -99,11 +99,9 @@ export const signInAction = async (formData: FormData) => {
     email,
     password,
   });
-
   if (error) {
-    return encodedRedirect("error", "/signin", error.message);
+    return encodedRedirect("error", "/login", error.message);
   }
-
   return redirect("/pricing");
 };
 
@@ -181,5 +179,5 @@ export const resetPasswordAction = async (formData: FormData) => {
 export async function signOutAction() {
   const supabase = createClient();
   await supabase.auth.signOut();
-  redirect('/signin');
+  redirect('/login');
 }

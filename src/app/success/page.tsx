@@ -11,9 +11,9 @@ export default function SuccessPage() {
       <h1 className="text-4xl font-bold mb-4">Subscription Successful!</h1>
       <p className="text-xl mb-4">Thank you for subscribing to our service.</p>
       <Button
-        onClick={() => router.push('/create')}
+        onClick={() => router.push('/')}
       >
-        Go to Dashboard
+        Start Creating
       </Button>
     </div>
   );

@@ -2,9 +2,10 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 
+
 export async function POST(request: Request) {
   const supabase = createClient();
-  const { userId, prompt, imageData, modelUsed, isPublic, tags } = await request.json();
+  const { userId, prompt, imageData, modelUsed, isPublic } = await request.json();
 
   if (!userId || !prompt || !imageData || !modelUsed) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -26,6 +27,29 @@ export async function POST(request: Request) {
     const { data: { publicUrl } } = supabase.storage
       .from('generations')
       .getPublicUrl(uploadData.path);
+
+    // Should come from the model
+    const modelTags = [
+      'outfit',
+      'inspiration',
+      'ideas',
+      'fashion',
+      'style',
+      'look'
+    ];
+
+    const processPromptToTags = (prompt: string): string[] => {
+        // Get words from prompt
+        const promptTags = prompt
+          .toLowerCase()
+          .split(/[\s,]+/)
+          .map(word => word.trim())
+          .filter(word => word.length > 2)
+          .filter(Boolean);
+      return [...promptTags, ...modelTags];
+    };
+
+    const tags = processPromptToTags(prompt);
 
     // Store generation data in the database
     const { data, error } = await supabase

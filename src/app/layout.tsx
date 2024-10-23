@@ -8,8 +8,8 @@ import { UserProvider } from '@/context/UserProvider';
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-dm-sans",
+  weight: ["200", "300", "400", "600", "700"],
+  variable: "--font-dmSans",
 });
 
 const defaultUrl = process.env.VERCEL_URL
@@ -18,8 +18,8 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Next.js and Supabase Starter Kit",
-  description: "The fastest way to build apps with Next.js and Supabase",
+  title: "genspoai",
+  description: "Generate infinite outfit ideas, interior design concepts, home decor inspo, and style inspiration with AI",
 };
 
 export default async function RootLayout({
@@ -42,20 +42,18 @@ export default async function RootLayout({
               <main className={dmSans.className}>
                 <div className="w-screen h-screen flex flex-col items-center">
                   <div className="flex-1 w-full h-full flex flex-col items-center">
-                    <nav className="bg-white absolute top-0 w-full flex justify-center border-b border-b-foreground/10 h-16">
-                      <div className="w-full flex justify-between items-center px-8 text-sm">
-                        <div className='font-medium uppercase text-xl items-center font-semibold'>
+                    <nav className="z-50 px-4 flex flex-row justify-between items-center bg-white absolute top-0 w-screen border-b border-b-foreground/10 h-16">
+                        <div className='font-medium text-xl items-center font-semibold'>
                           <Link href={"/"} className="flex flex-row">
                             <div>
-                              Genspo
+                              genspo
                             </div>
-                            <div className="text-purple-500">
-                                AI
+                            <div className="text-primary">
+                                ai
                             </div>
                           </Link>
                         </div>
                         <HeaderAuth />
-                      </div>
                     </nav>
                     <div className="h-full w-full">
                       {children}

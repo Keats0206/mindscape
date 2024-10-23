@@ -65,7 +65,7 @@ export type DynamicCloudProps = {
   images: ImageItem[];
 };
 
-export default function ImageCloud({ images }: DynamicCloudProps) {
+export function ImageCloud({ images }: DynamicCloudProps) {
   const { theme } = useTheme();
   const [isClient, setIsClient] = useState(false);
 
