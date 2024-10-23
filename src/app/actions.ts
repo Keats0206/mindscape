@@ -4,11 +4,14 @@ import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { track } from '@vercel/analytics';
+
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function signUpAction(formData: FormData): Promise<void> {
+  track('Signup');
   const email = formData.get("email")?.toString();
   const password = formData.get("password")?.toString();
   const supabase = createClient();
@@ -91,6 +94,7 @@ export async function signUpAction(formData: FormData): Promise<void> {
 }
 
 export const signInAction = async (formData: FormData) => {
+  track('Signin');
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
   const supabase = createClient();
@@ -102,10 +106,11 @@ export const signInAction = async (formData: FormData) => {
   if (error) {
     return encodedRedirect("error", "/login", error.message);
   }
-  return redirect("/pricing");
+  return redirect("/");
 };
 
 export const forgotPasswordAction = async (formData: FormData) => {
+  track('Forgot password');
   const email = formData.get("email")?.toString();
   const supabase = createClient();
   const origin = headers().get("origin");
@@ -140,6 +145,7 @@ export const forgotPasswordAction = async (formData: FormData) => {
 };
 
 export const resetPasswordAction = async (formData: FormData) => {
+  track('Reset password');
   const supabase = createClient();
 
   const password = formData.get("password") as string;
@@ -177,6 +183,7 @@ export const resetPasswordAction = async (formData: FormData) => {
 };
 
 export async function signOutAction() {
+  track('Signout');
   const supabase = createClient();
   await supabase.auth.signOut();
   redirect('/login');

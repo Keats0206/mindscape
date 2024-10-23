@@ -24,30 +24,30 @@ body {
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
 
-    /* Primary - purple 600 */
-    --primary: 265 93% 58%;
+    /* Primary - using #a78bfa (purple-400) */
+    --primary: 259 96% 76%;
     --primary-foreground: 0 0% 100%;
 
     /* Secondary - softer purple */
-    --secondary: 265 30% 96%;
-    --secondary-foreground: 265 50% 20%;
+    --secondary: 259 30% 96%;
+    --secondary-foreground: 259 50% 20%;
 
     /* Muted */
-    --muted: 265 20% 96%;
-    --muted-foreground: 265 10% 45%;
+    --muted: 259 20% 96%;
+    --muted-foreground: 259 10% 45%;
 
     /* Accent - lighter purple */
-    --accent: 265 93% 70%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 259 96% 85%;
+    --accent-foreground: 259 50% 20%;
 
     /* Destructive */
     --destructive: 0 100% 63%;
     --destructive-foreground: 0 0% 100%;
 
     /* Borders & Inputs */
-    --border: 265 20% 90%;
-    --input: 265 20% 90%;
-    --ring: 265 93% 58%;
+    --border: 259 20% 90%;
+    --input: 259 20% 90%;
+    --ring: 259 96% 76%;
 
     /* Your existing chart & color system */
     --chart-1: 12 76% 61%;
@@ -64,6 +64,11 @@ body {
 
     --radius: 0.5rem;
   }
+}
+
+::selection {
+  background: rgb(167, 139, 250);
+  color: rgb(255, 255, 255);
 }
 
 ::selection {

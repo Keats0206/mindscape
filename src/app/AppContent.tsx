@@ -18,7 +18,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useGenerationCount } from '@/hooks/useGenerationCount';
 import { CompleteUserData } from '@/types';
 import { Dialog, DialogTrigger, DialogContent } from '@/components/ui/dialog';
-import { Download, LinkIcon } from 'lucide-react';
+import { Download } from 'lucide-react';
+import { track } from '@vercel/analytics';
 
 const useImageOperations = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -124,6 +125,7 @@ export default function AppContent({ initialUserData }: { initialUserData: Compl
   }, [userId]);
 
   const handleShuffle = () => {
+    track('Shuffle');
     const newImageOf = promptOptions.imageOf[Math.floor(Math.random() * promptOptions.imageOf.length)];
     const newDressedIn = promptOptions.style[Math.floor(Math.random() * promptOptions.style.length)];
     const newWearing = promptOptions.accessories[Math.floor(Math.random() * promptOptions.accessories.length)];
@@ -141,6 +143,7 @@ export default function AppContent({ initialUserData }: { initialUserData: Compl
   }
 
   const handleGenerate = async () => {
+    track('Generate');
     setIsGenerating(true);
     const currentPrompt = `${imageOf} ${dressedIn} ${wearing} ${shotIn} ${framedAs}`.trim();
     setPrompt(currentPrompt);
@@ -155,6 +158,7 @@ export default function AppContent({ initialUserData }: { initialUserData: Compl
           image: imageData as string
         }, ...prev]);
         incrementCount();
+        track('Generate Success');
         // Store the generation
         const result = await storeGeneration(userId, currentPrompt, imageData as string, activeModel.name, isPublic, tags);
         if (result && result.data) {
@@ -166,6 +170,7 @@ export default function AppContent({ initialUserData }: { initialUserData: Compl
         }
       }
     } catch (err) {
+      track('Generate Error');
       console.error('Error generating image:', err);
     } finally {
       setIsGenerating(false);
@@ -173,6 +178,7 @@ export default function AppContent({ initialUserData }: { initialUserData: Compl
   };
 
   const handleClear = () => {
+    track('Clear');
     setImageOf("");
     setDressedIn("");
     setWearing("");
@@ -367,6 +373,7 @@ export default function AppContent({ initialUserData }: { initialUserData: Compl
                           <p className="mt-2 text-sm text-gray-600 text-center">{text}</p>
                           <div className='pt-4 flex flex-row gap-2'>
                             <Button variant="outline" onClick={() => {
+                              track('Download');
                                 const link = window.location.href;
                                 const a = document.createElement('a');
                                 a.href = link;
@@ -376,12 +383,6 @@ export default function AppContent({ initialUserData }: { initialUserData: Compl
                                 <Download className="h-4 w-4 mr-2" />
                                   Download
                              </Button>
-                            <Button variant="outline" onClick={() => {
-                              navigator.clipboard.writeText(window.location.href);
-                            }}>
-                              <LinkIcon className="h-4 w-4 mr-2" />
-                                Copy Link
-                            </Button>
                           </div>
                         </div>
                     </DialogContent>
