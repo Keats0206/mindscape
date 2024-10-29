@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import { Category } from "@/types";
 
 export default function CategoryCard({ category }: { category: Category }) {    
@@ -15,12 +14,12 @@ export default function CategoryCard({ category }: { category: Category }) {
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {category.posts.map((post) => (
                         <div key={post.id} className="flex items-center justify-center aspect-square bg-stone-200 rounded-sm overflow-hidden">
-                            <Image
-                            src={post.result_url}
-                            alt={post.prompt}
-                            width={200}
-                            height={200}
-                            className="object-cover w-full h-full"
+                            <img
+                                src={post.result_url}
+                                alt={post.prompt}
+                                width={200}
+                                height={200}
+                                className="object-cover w-full h-full"
                             />
                         </div>
                     ))}

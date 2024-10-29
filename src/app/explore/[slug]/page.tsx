@@ -20,6 +20,7 @@ export default function Category() {
   const router = useRouter();
   const params = useParams();
   const [category, setCategory] = useState<string>('');
+  const [searchTags, setSearchTags] = useState<string[]>([]);
   const [relatedCategories, setRelatedCategories] = useState<CategoryType[]>([]);
   const [generations, setGenerations] = useState<Generation[]>([]);
   const [loading, setLoading] = useState(true);
@@ -27,33 +28,46 @@ export default function Category() {
 
   useEffect(() => {
     if (params.slug) {
-      setCategory(params.slug.toString().replace('-', ' '));
+      // Convert URL slug to display category and search tags
+      const categoryFromSlug = params.slug.toString();
+      setCategory(categoryFromSlug.replace(/-/g, ' ')); // For display
+      
+      // Convert slug to search tags
+      const tags = categoryFromSlug
+        .split('-')
+        .filter(tag => tag.length > 2); // Filter out short words
+      
+      setSearchTags(tags);
     } else {
       router.push('/explore');
     }
   }, [params.slug, router]);
 
   useEffect(() => {
-    if (!category) return;
+    if (!searchTags.length) return;
 
     const fetchData = async () => {
       setLoading(true);
       setError(null);
       try {
-        // Fetch generations for the current category
+        // Fetch generations that contain ALL the search tags
         const { data: generationsData, error: generationsError } = await supabase
           .from("generations")
           .select("*")
           .eq("is_public", true)
-          .contains('tags', [category]);
+          .contains('tags', searchTags); // This will match all tags
 
         if (generationsError) throw generationsError;
 
         setGenerations(generationsData || []);
 
-        // Select 3 random categories excluding the current one
-        const otherCategories = featuredTags.filter(cat => cat !== category);
-        const randomCategories = otherCategories.sort(() => 0.5 - Math.random()).slice(0, 4);
+        // Select random categories excluding the current search tags
+        const otherCategories = featuredTags.filter(cat => 
+          !searchTags.some(tag => cat.toLowerCase().includes(tag.toLowerCase()))
+        );
+        const randomCategories = otherCategories
+          .sort(() => 0.5 - Math.random())
+          .slice(0, 4);
 
         // Fetch sample posts for each random category
         const relatedCategoriesData = await Promise.all(randomCategories.map(async (cat) => {
@@ -83,7 +97,7 @@ export default function Category() {
     };
 
     fetchData();
-  }, [category]);
+  }, [searchTags]);
 
   if (loading) {
     return (
@@ -102,7 +116,7 @@ export default function Category() {
   }
 
   return (
-    <div className="p-8 w-screen flex flex-col space-y-4">
+    <div className="mt-24 p-4 w-screen flex flex-col space-y-2">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -114,7 +128,7 @@ export default function Category() {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink href={`/explore/${category?.replace(' ', '-')}`} className="capitalize">
+            <BreadcrumbLink href={`/explore/${params.slug}`} className="capitalize">
               {category}
             </BreadcrumbLink>
           </BreadcrumbItem>
@@ -132,7 +146,7 @@ export default function Category() {
       )}
       <div className="w-full">
         <div className="text-2xl font-bold pt-6 pb-6">Explore More</div>
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {relatedCategories.map((relatedCategory, index) => (
             <div key={index} className="flex justify-center items-center">
               <CategoryCard category={relatedCategory} />

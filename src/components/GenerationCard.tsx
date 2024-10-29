@@ -2,7 +2,6 @@
 
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { CopyIcon } from "lucide-react";
-import Image from "next/image";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Generation } from "@/types";
@@ -24,7 +23,7 @@ export const GenerationCard = ({ generation, isPending = false }: { generation: 
           {isPending ? (
             <div className="w-full h-[200px] bg-gray-200" />
           ) : (
-            <Image
+            <img
               src={generation.result_url || "/decor.png"}
               alt={generation.prompt}
               width={600}

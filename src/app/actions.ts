@@ -4,14 +4,16 @@ import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { track } from '@vercel/analytics/server';
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function signUpAction(formData: FormData): Promise<void> {
+  track('Signup');
   const email = formData.get("email")?.toString();
   const password = formData.get("password")?.toString();
-  const supabase = createClient();
+  const supabase = await createClient();
   const origin = headers().get("origin");
 
   if (!email || !password) {
@@ -52,7 +54,7 @@ export async function signUpAction(formData: FormData): Promise<void> {
         stripe_customer_id: customer.id, // Store Stripe customer ID
         created_at: now,
         updated_at: now,
-        subscription_status: 'free_tier',
+        subscription_status: 'trialing',
       });
 
       if (userError) {
@@ -64,8 +66,8 @@ export async function signUpAction(formData: FormData): Promise<void> {
         .from('subscriptions')
         .insert({
           user_id: authData.user.id,
-          status: 'active',
-          plan_id: 'free_tier',
+          status: 'inactice',
+          plan_id: 'trialing',
           current_period_start: now,
           current_period_end: null, // Null for indefinite free tier
           stripe_customer_id: customer.id, // Store Stripe customer ID
@@ -91,25 +93,26 @@ export async function signUpAction(formData: FormData): Promise<void> {
 }
 
 export const signInAction = async (formData: FormData) => {
+  track('Signin');
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
+      email,
+      password,
   });
 
   if (error) {
-    return encodedRedirect("error", "/signin", error.message);
+      return encodedRedirect("error", "/login", error.message);
   }
-
-  return redirect("/pricing");
+  return redirect("/");
 };
 
 export const forgotPasswordAction = async (formData: FormData) => {
+  track('Forgot password');
   const email = formData.get("email")?.toString();
-  const supabase = createClient();
+  const supabase = await createClient();
   const origin = headers().get("origin");
   const callbackUrl = formData.get("callbackUrl")?.toString();
 
@@ -142,7 +145,8 @@ export const forgotPasswordAction = async (formData: FormData) => {
 };
 
 export const resetPasswordAction = async (formData: FormData) => {
-  const supabase = createClient();
+  track('Reset password');
+  const supabase = await createClient();
 
   const password = formData.get("password") as string;
   const confirmPassword = formData.get("confirmPassword") as string;
@@ -178,8 +182,21 @@ export const resetPasswordAction = async (formData: FormData) => {
   encodedRedirect("success", "/protected/reset-password", "Password updated");
 };
 
-export async function signOutAction() {
-  const supabase = createClient();
-  await supabase.auth.signOut();
-  redirect('/signin');
+export async function signOutAction(): Promise<void> {
+  track('Signout');
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase.auth.signOut();
+  
+    if (error) {
+      console.error("Sign out error:", error.message);
+      return encodedRedirect("error", "/login", "Error signing out");
+    }
+    
+    // Redirect to the login page after successful sign out
+    return encodedRedirect("success", "/login", "Successfully signed out");
+  } catch (error) {
+    console.error("Unexpected error during sign out:", error);
+    return encodedRedirect("error", "/login", "Unexpected error signing out");
+  }
 }

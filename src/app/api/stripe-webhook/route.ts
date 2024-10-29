@@ -30,18 +30,15 @@ export async function POST(req: Request) {
         const session = event.data.object as Stripe.Checkout.Session;
         await handleCheckoutSessionCompleted(session);
         break;
-
       case 'customer.subscription.created':
       case 'customer.subscription.updated':
       case 'customer.subscription.deleted':
         const subscription = event.data.object as Stripe.Subscription;
         await handleSubscriptionChange(subscription, event.type);
         break;
-
       default:
         console.log(`Unhandled event type ${event.type}`);
     }
-
     return NextResponse.json({ received: true });
   } catch (error) {
     console.error('Error processing webhook:', error);
@@ -51,20 +48,15 @@ export async function POST(req: Request) {
 
 async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
   console.log('Handling completed checkout session:', session.id);
-
-  const supabase = createClient();
-
+  const supabase = await createClient();
   const userId = session.metadata?.userId;
   if (!userId) {
     console.error('User ID not found in session metadata');
     return;
   }
-
   console.log('User ID from session metadata:', userId);
-
   // Fetch the subscription details
   const subscription = await stripe.subscriptions.retrieve(session.subscription as string);
-
   const subscriptionData = {
     user_id: userId,
     status: subscription.status,
@@ -82,17 +74,44 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
     trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
   };
 
-  // Insert into subscriptions table
-  const { error: subscriptionError } = await supabase
+  // First try to update existing subscription
+  const { data: existingSubscription, error: fetchError } = await supabase
     .from('subscriptions')
-    .insert(subscriptionData);
+    .select()
+    .eq('user_id', userId)
+    .single();
 
-  if (subscriptionError) {
-    console.error('Error inserting subscription data:', subscriptionError);
-    return;
+    if (fetchError) {
+      console.error('Error fetching existing subscription:', fetchError);
+      return;
+    }
+
+  if (existingSubscription) {
+    // Update existing subscription
+    const { error: updateError } = await supabase
+      .from('subscriptions')
+      .update(subscriptionData)
+      .eq('user_id', userId);
+
+    if (updateError) {
+      console.error('Error updating existing subscription:', updateError);
+      return;
+    }
+    console.log('Updated existing subscription for user:', userId);
+  } else {
+    // Insert new subscription
+    const { error: insertError } = await supabase
+      .from('subscriptions')
+      .insert(subscriptionData);
+
+    if (insertError) {
+      console.error('Error inserting new subscription:', insertError);
+      return;
+    }
+    console.log('Created new subscription for user:', userId);
   }
 
-// Update user's subscription status and active subscription ID
+  // Update user's subscription status
   const { error: userError } = await supabase
     .from('users')
     .update({ 
@@ -106,13 +125,18 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
     return;
   }
 
-  console.log(`Created subscription and updated user status for user ${userId}`);
+  console.log(`Updated user subscription status for user ${userId}`);
 }
 
 async function handleSubscriptionChange(subscription: Stripe.Subscription, eventType: string) {
   console.log(`Handling ${eventType} for subscription:`, subscription.id);
+  console.log('Subscription details:', {
+    status: subscription.status,
+    cancelAtPeriodEnd: subscription.cancel_at_period_end,
+    currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+  });
 
-  const supabase = createClient();
+  const supabase = await createClient();
 
   // Fetch the subscription from the database to get the user_id
   const { data: subscriptionData, error: fetchError } = await supabase
@@ -121,22 +145,26 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription, event
     .eq('stripe_subscription_id', subscription.id)
     .single();
 
-  if (fetchError) {
+  if (fetchError || !subscriptionData) {
     console.error('Error fetching subscription data:', fetchError);
     return;
   }
 
-  if (!subscriptionData) {
-    console.error('Subscription not found in database');
-    return;
-  }
-
   const userId = subscriptionData.user_id;
-  console.log('User ID from database:', userId);
 
+  // Determine the correct status
+  let subscriptionStatus = subscription.status;
+  if (subscription.cancel_at_period_end) {
+    // Still active but will cancel at period end
+    subscriptionStatus = 'active'; // Keep it as active while they still have access
+  } else if (eventType === 'customer.subscription.deleted') {
+    // Immediate cancellation
+    subscriptionStatus = 'canceled';
+  }
+  
   const updatedSubscriptionData = {
-    status: eventType === 'customer.subscription.deleted' ? 'canceled' : subscription.status,
-    plan_id: subscription.items.data[0].plan.id,
+    status: subscriptionStatus,
+    plan_id: subscription.items.data[0].price.id,
     current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
     current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
     updated_at: new Date().toISOString(),
@@ -161,7 +189,10 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription, event
   // Update user's subscription status
   const { error: userError } = await supabase
     .from('users')
-    .update({ subscription_status: updatedSubscriptionData.status, active_subscription_id: subscription.id })
+    .update({ 
+      subscription_status: subscriptionStatus,
+      active_subscription_id: subscription.id 
+    })
     .eq('id', userId);
 
   if (userError) {
@@ -169,5 +200,5 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription, event
     return;
   }
 
-  console.log(`Updated subscription and user status for user ${userId}`);
+  console.log(`Updated subscription status to ${subscriptionStatus} for user ${userId}`);
 }

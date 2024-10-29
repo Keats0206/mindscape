@@ -1,5 +1,3 @@
-import { User } from "@supabase/supabase-js";
-
 export interface Subscription {
   id: bigint;
   user_id: string;
@@ -32,13 +30,22 @@ export interface UserDetails {
   active_subscription_id: string | null;
 }
 
-export interface CompleteUserData extends Omit<UserDetails, 'id' | 'email' | 'created_at' | 'updated_at'>, Omit<User, 'id' | 'email' | 'created_at' | 'updated_at'> {
-  id: string;
-  email: string;
-  created_at: string;
-  updated_at: string;
-  subscription: Subscription | null;
+
+export interface CompleteUserData {
+  userDetails: UserDetails;
+  subscription: Subscription;
 }
+
+export function createCompleteUserData(
+  userDetails: UserDetails, 
+  subscription: Subscription
+): CompleteUserData {
+  return {
+    userDetails: userDetails,
+    subscription: subscription
+  };
+}
+
 
 export interface Generation {
   id: string;
@@ -54,18 +61,6 @@ export interface Generation {
 
 export interface CategoryProps {
   initialCategory?: string;
-}
-
-export function createCompleteUserData(
-  userDetails: UserDetails, 
-  subscription: Subscription | null, 
-  supabaseUser: User
-): CompleteUserData {
-  return {
-    ...userDetails,
-    ...supabaseUser,
-    subscription,
-  };
 }
 
 export interface Post {
@@ -84,4 +79,28 @@ export interface Model {
   name: string;
   value: string;
   description: string;
+}
+export interface PromptLine {
+  id: string;
+  text: string;
+  placeholder: string;
+  options?: string[];
+}
+
+export interface PromptFormDetail {
+  id: string;
+  name: string;
+  description: string;
+  promptLines: PromptLine[];
+}
+
+export interface GenApp {
+  id: string;
+  name: string;
+  creatorID: string;
+  creatorUsername: string;
+  coverImage: string;
+  description: string;
+  model: Model;
+  promptForm: PromptFormDetail;
 }

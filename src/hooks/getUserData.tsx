@@ -2,7 +2,7 @@ import { createClient } from '@/utils/supabase/server';
 import { CompleteUserData, Subscription, UserDetails, createCompleteUserData } from '@/types';
 
 export async function getUserData(): Promise<CompleteUserData | null> {  
-  const supabase = createClient();
+  const supabase = await createClient();
 
   try {
     const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -50,8 +50,7 @@ export async function getUserData(): Promise<CompleteUserData | null> {
     }
     const completeUserData = createCompleteUserData(
       userDetails as UserDetails, 
-      subscription as Subscription | null, 
-      user
+      subscription as Subscription
     );
     return completeUserData;
   } catch (error) {

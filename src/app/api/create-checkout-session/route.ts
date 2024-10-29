@@ -6,7 +6,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function POST(request: Request) {
   try {
-    const origin = request.headers.get('origin') || 'http://localhost:3000';
+    const origin = request.headers.get('origin') || 'https://genspoai.com';
     const { userId } = await request.json();
 
     if (!userId) {
@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     }
 
     // Get the user's Stripe customer ID from your database
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: userData, error: userError } = await supabase
       .from('users')
       .select('stripe_customer_id')
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
       ],
       mode: 'subscription',
       success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/canceled`,
+      cancel_url: `${origin}/profile`,
       metadata: {
         userId: userId
       }

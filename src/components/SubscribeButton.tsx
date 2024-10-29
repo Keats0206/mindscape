@@ -1,14 +1,14 @@
+"use client"
+
 import React, { useState } from 'react';
 import getStripe from '@/utils/stripe/stripe';
 import { Button } from '@/components/ui/button';
-import { useUser } from '@/context/UserProvider';
+import { CompleteUserData } from '@/types';
 
-const SubscribeButton: React.FC = () => {
+export default function SubscribeButton({ userData }: { userData: CompleteUserData }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { userData } = useUser();
-
-  const user_id = userData?.id;
+  const user_id = userData?.userDetails.id;
 
   const handleSubscribe = async () => {
     setIsLoading(true);
@@ -52,15 +52,11 @@ const SubscribeButton: React.FC = () => {
       <Button
         onClick={handleSubscribe}
         disabled={isLoading}
-        className={`w-full bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded ${
-          isLoading || !user_id ? 'opacity-50 cursor-not-allowed' : ''
-        }`}
+        className='w-full'
       >
-        {isLoading ? 'Processing...' : 'Subscribe Now'}
+        {isLoading ? 'Opening...' : 'Upgrade'}
       </Button>
       {error && <p className="text-red-500 mt-2">{error}</p>}
     </div>
   );
 };
-
-export default SubscribeButton;
