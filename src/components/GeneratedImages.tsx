@@ -3,7 +3,6 @@
 import { memo } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogTrigger, DialogContent } from '@/components/ui/dialog';
-// import Image from 'next/image';
 
 const GeneratedImages = memo(({ 
     items, 
@@ -52,8 +51,10 @@ const GeneratedImages = memo(({
           ))}
         </div>
         {items.length === 0 && !isGenerating && (
-          <div className='max-w-[500px] p-24 text-center text-gray-500 w-full h-full flex items-center justify-center'>
-            No generations yet. Start creating on the left using your own ideas or try the shuffle button!
+          <div className='max-w-full p-24 text-center text-gray-500 w-full md:h-screen flex items-center justify-center'>
+            <div className='flex flex-col items-center justify-center max-w-[500px] md:mb-24'>
+                No generations yet. Start creating on the left using your own ideas or try the shuffle button!
+            </div>
           </div>
         )}
       </div>

@@ -6,14 +6,6 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 
 export default function Signup({ searchParams }: { searchParams: Message }) {
-  if ("message" in searchParams) {
-    return (
-      <div className="w-screen flex-1 flex items-center h-screen sm:max-w-md justify-center gap-2 p-4">
-        <FormMessage message={searchParams} />
-      </div>
-    );
-  }
-
   return (
     <div className="w-screen flex items-center justify-center">
       <form className="flex-1 flex flex-col max-w-[400px] mt-32">

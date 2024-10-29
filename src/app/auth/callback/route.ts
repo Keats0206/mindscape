@@ -1,11 +1,24 @@
-import { supabase } from "@/utils/supabase/client";
+import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
+  const supabase = await createClient();
+
   try {
     const requestUrl = new URL(request.url);
-    const code = requestUrl.searchParams.get("code");
+    const error = requestUrl.searchParams.get("error");
+    const errorDescription = requestUrl.searchParams.get("error_description");
     const origin = requestUrl.origin;
+
+    // Handle incoming errors first
+    if (error) {
+      console.error("Auth error:", error, errorDescription);
+      return NextResponse.redirect(
+        `${origin}/login?error=${error}&description=${encodeURIComponent(errorDescription || '')}`
+      );
+    }
+
+    const code = requestUrl.searchParams.get("code");
     const redirectTo = requestUrl.searchParams.get("redirect_to")?.toString();
 
     if (!code) {
@@ -13,14 +26,14 @@ export async function GET(request: Request) {
       return NextResponse.redirect(`${origin}/login?error=no_code`);
     }
 
-    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+    const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
 
-    if (error) {
-      console.error("Auth error:", error.message);
-      return NextResponse.redirect(`${origin}/login?error=auth_error`);
+    if (exchangeError) {
+      console.error("Session exchange error:", exchangeError.message);
+      return NextResponse.redirect(`${origin}/login?error=exchange_error`);
     }
 
-    // Set cookie with the session
+    // Rest of your code...
     const response = NextResponse.redirect(
       redirectTo ? `${origin}${redirectTo}` : `${origin}/profile`
     );
@@ -37,7 +50,7 @@ export async function GET(request: Request) {
     return response;
 
   } catch (err) {
-    console.error("Callback error:", err);
+    console.error("Error in auth callback:", err);
     // Get origin from request if available, otherwise fallback to a default
     const fallbackOrigin = request.url ? new URL(request.url).origin : process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
     return NextResponse.redirect(`${fallbackOrigin}/login?error=unknown`);

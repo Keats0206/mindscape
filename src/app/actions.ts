@@ -20,11 +20,13 @@ export async function signUpAction(formData: FormData): Promise<void> {
     return encodedRedirect("error", "/signup", "Email and password are required");
   }
 
+
   const { data: authData, error: authError } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      emailRedirectTo: `${origin}/auth/callback`,
+      emailRedirectTo: `${origin}/auth/callback?redirect_to=/profile`,
+      data: { email },
     },
   });
 
