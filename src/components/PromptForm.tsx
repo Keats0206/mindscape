@@ -45,6 +45,7 @@ const PromptForm = memo(({ onPromptChange, genApp }: {
     track('Clear');
     setValues({});
     updatePrompt({});
+    onPromptChange('');
   };
 
   const randomColor = () => {
