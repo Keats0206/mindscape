@@ -51,7 +51,7 @@ const GeneratedImages = memo(({
           ))}
         </div>
         {items.length === 0 && !isGenerating && (
-          <div className='max-w-full p-24 text-center text-gray-500 w-full md:h-screen flex items-center justify-center'>
+          <div className='max-w-full p-24 text-center text-gray-500 w-full md:h-full flex items-center justify-center'>
             <div className='flex flex-col items-center justify-center max-w-[500px] md:mb-24'>
                 No generations yet. Start creating on the left using your own ideas or try the shuffle button!
             </div>
