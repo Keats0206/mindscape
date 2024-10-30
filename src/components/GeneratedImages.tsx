@@ -13,7 +13,7 @@ const GeneratedImages = memo(({
   }) => {
     return (
       <div className='w-full bg-white'>
-        <div className="max-h-screen p-4 overflow-y-scroll w-full grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div className="max-h-screen p-4 overflow-y-scroll w-full grid grid-cols-2 gap-4">
           {isGenerating && (
             <div className="flex flex-col space-y-2">
               <Skeleton className="w-full aspect-square rounded-md" />

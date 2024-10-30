@@ -156,7 +156,7 @@ export default function HomeClient({ initialUserData }: { initialUserData: Compl
 
   return (
     <div className="w-screen min-h-screen flex flex-col md:flex-row pt-26">
-      <div className="fixed bottom-0 border-t border-2 md:border-0 z-30 bg-white drop-shadow-2xl w-full md:relative backdrop-blur-2xl md:w-[400px] flex flex-col gap-4 border-r p-4 md:pt-20">
+      <div className="fixed bottom-0 border-t border-2 md:border-0 z-30 bg-white drop-shadow-2xl w-full md:relative backdrop-blur-2xl md:w-[500px] flex flex-col gap-4 border-r p-4 md:pt-20">
 
         <GenAppSelector 
           genApps={genApps}

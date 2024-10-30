@@ -27,16 +27,17 @@ export const GenAppSelector = ({ genApps, activeGenApp, onGenAppChange }: GenApp
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetTrigger className='w-full'>
-        <div className='p-2 flex flex-row gap-2 border border-gray-200 hover:border-gray-400 rounded-md'>
+      <SheetTrigger className='w-full' disabled={true}>
+        <div className='p-2 flex flex-row gap-2 border border-gray-200 rounded-md'>
           <div className='w-12 h-12 bg-gray-200 rounded-md '>
             <img src={activeGenApp.coverImage} alt={activeGenApp.model.name} className='w-full h-full object-cover rounded-md' />
           </div>
           <div className='flex flex-col items-start'>
             <div className='font-bold'>{activeGenApp.name}</div>
             <div className='text-xs text-gray-500 line-clamp-1 overflow-hidden'>{activeGenApp.model.description}</div> 
-          </div>
+          </div>  
         </div>
+        <div className='text-xs text-gray-500 w-full text-left pt-1'>More apps coming soon, including interior design, home decor, and more! Have an idea? <a href="mailto:team@genspoai.com" className='text-blue-500'>team@genspoai.com</a></div>
       </SheetTrigger>
       <SheetContent side={'left'} className='p-4 space-y-4'>
         <div className='text-sm font-medium pb-2 text-stone-500'>Select A Model</div>

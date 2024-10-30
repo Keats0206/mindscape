@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, memo } from 'react';
+import { useState, memo, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { track } from '@vercel/analytics';
 import { Shuffle, Trash } from 'lucide-react';
@@ -10,8 +10,33 @@ const PromptForm = memo(({ onPromptChange, genApp }: {
   onPromptChange: (prompt: string) => void;
   genApp: GenApp;
 }) => {
-  // Dynamic state management for prompt lines
   const [values, setValues] = useState<Record<string, string>>({});
+
+  // Generate colors once when component mounts
+  const lineColors = useMemo(() => {
+    const colors = [
+      "bg-violet-100",
+      "bg-teal-100",
+      "bg-lime-100",
+      "bg-orange-100",
+      "bg-emerald-100",
+      "bg-red-100"
+    ];
+    
+    const usedColors: string[] = [];
+    return genApp.promptForm.promptLines.map(() => {
+      let selectedColor;
+      do {
+        selectedColor = colors[Math.floor(Math.random() * colors.length)];
+      } while (usedColors.includes(selectedColor) && usedColors.length < colors.length);
+      
+      usedColors.push(selectedColor);
+      if (usedColors.length === colors.length) {
+        usedColors.length = 0;
+      }
+      return selectedColor;
+    });
+  }, []); // Empty dependency array means this runs once on mount
 
   const updatePrompt = (newValues: Record<string, string>) => {
     const prompt = genApp.promptForm.promptLines
@@ -48,53 +73,35 @@ const PromptForm = memo(({ onPromptChange, genApp }: {
     onPromptChange('');
   };
 
-  const randomColor = () => {
-    const colors = ["bg-violet-100", "bg-teal-100", "bg-lime-100", "bg-orange-100", "bg-emerald-100", "bg-red-100"];
-    let selectedColor;
-  
-    // Keep selecting a new color until we get one that hasn't been used before
-    do {
-      selectedColor = colors[Math.floor(Math.random() * colors.length)];
-    } while (usedColors.includes(selectedColor));
-  
-    usedColors.push(selectedColor);
-  
-    // Reset the usedColors array once all colors have been used
-    if (usedColors.length === colors.length) {
-      usedColors = [];
-    }
-  
-    return selectedColor;
-  };
-  
-  let usedColors: string[] = [];
-  
   return (
-    <div className='md:text-lg bg-white border border-gray-200 rounded p-2 flex flex-wrap w-full font-bold gap-1 items-center'>
-      {genApp.promptForm.promptLines.map((line) => (
-        <div key={line.id} className='flex-wrap flex items-center gap-1'>
-          {/* Text before input */}
-          <div className="text-gray-700">{line.text}</div>
-          {/* Input field */}
-          <input 
-            className={`rounded-md p-1 w-auto ${randomColor()}`}
-            placeholder={line.placeholder}
-            value={values[line.id] || ''}
-            onChange={(e) => {
-              const newValues = {
-                ...values,
-                [line.id]: e.target.value
-              };
-              setValues(newValues);
-              updatePrompt(newValues);
-            }}
-          />
-        </div>
-      ))}
-      <div className='flex flex-row gap-1 w-full mt-2'>
+    <div className="bg-white border border-gray-200 rounded-lg p-4 w-full">
+      <div className="text-sm font-bold flex flex-wrap gap-2 items-center">
+        {genApp.promptForm.promptLines.map((line, index) => (
+          <>
+              <span className="whitespace-nowrap">
+                {line.text}
+              </span>
+              <input 
+                className={`rounded-md p-1 text-sm ${lineColors[index]} min-w-fit flex-1`}
+                placeholder={line.placeholder}
+                value={values[line.id] || ''}
+                onChange={(e) => {
+                  const newValues = {
+                    ...values,
+                    [line.id]: e.target.value
+                  };
+                  setValues(newValues);
+                  updatePrompt(newValues);
+                }}
+              />
+            </>
+        ))}
+      </div>
+      
+      <div className="flex gap-2 mt-4">
         <Button 
           variant="outline" 
-          className='flex flex-row gap-1'
+          className="flex items-center gap-2"
           onClick={handleShuffle}
         >
           <Shuffle className="w-4 h-4" />
