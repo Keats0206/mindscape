@@ -3,6 +3,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import ManageSubscriptionButton from '@/components/ManageSubscriptionButton';
 import { CompleteUserData } from '@/types';
@@ -17,10 +18,14 @@ function ProfileComponent({ userData }: { userData: CompleteUserData }) {
     <div className="flex flex-col items-center justify-center w-full h-full">
       <div className="h-screen space-y-4 max-w-[400px] flex flex-col items-center pt-48">
         {userDetails.profile_picture_url ? (
-          <img 
+          <Image
             src={userDetails.profile_picture_url} 
             alt="Profile Picture" 
             className="w-12 h-12 rounded-full mx-auto"
+            width={48}
+            height={48}
+            placeholder="blur"
+            blurDataURL={userDetails.profile_picture_url}
           />
         ) : (
           <div className="w-12 h-12 rounded-full mx-auto flex items-center justify-center font-bold text-white bg-gradient-to-r from-blue-500 to-purple-500">

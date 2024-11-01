@@ -7,7 +7,7 @@ import { DM_Sans } from "next/font/google";
 import { Analytics } from '@vercel/analytics/react';
 import { getCurrentUser } from '@/utils/user';
 import { UserProvider } from '@/contexts/UserContext';
-
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -63,6 +63,7 @@ export default async function RootLayout({
           </UserProvider>
         </ThemeProvider>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

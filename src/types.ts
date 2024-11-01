@@ -61,6 +61,7 @@ export interface Generation {
 
 export interface CategoryProps {
   initialCategory?: string;
+  
 }
 
 export interface Post {
@@ -71,7 +72,10 @@ export interface Post {
 
 export interface Category {
   name: string;
-  posts: Post[];
+  description: string;
+  slug: string;
+  tags: string[];
+  posts?: Post[];
 }
 export interface Model {
   id: number;

@@ -1,7 +1,6 @@
 "use client";
 
-"use client";
-
+import Image from 'next/image';
 import { useEffect, useMemo, useState } from "react";
 import { useTheme } from "next-themes";
 import { Cloud, ICloud } from "react-icon-cloud";
@@ -40,7 +39,7 @@ export const renderCustomImage = (image: ImageItem, theme: string) => {
       rel="noopener noreferrer"
       onClick={(e) => e.preventDefault()}
     >
-      <img
+      <Image    
         src={image.src}
         alt={image.alt}
         width={image.width || 72}
@@ -48,6 +47,8 @@ export const renderCustomImage = (image: ImageItem, theme: string) => {
         style={{
           filter: theme === "dark" ? "brightness(1.2)" : "none",
         }}
+        placeholder="blur"
+        blurDataURL={image.src}
       />
     </a>
   );

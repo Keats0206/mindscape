@@ -41,11 +41,11 @@ export const genApps: GenApp[] = [
           text: 'wearing',
           placeholder: 'a flowing lavender dress with ruffles',
           options: [
-            'a white lace sundress with cowboy boots',
-            'a gold fringe dress with denim shorts',
-            'a red plaid skirt with an oversized sweater',
-            'a black leather jacket and fitted mini dress',
-            'a pastel blue two-piece summer set'
+            'a white lace sundress',
+            'a gold fringe dress',
+            'a red plaid skirt',
+            'a black leather jacket',
+            'a pastel blue'
           ]
         },
         {
@@ -92,6 +92,74 @@ export const genApps: GenApp[] = [
             'cozy and chic autumnal feel',
             'dark and mysterious atmosphere',
             'romantic and whimsical setting'
+          ]
+        }
+      ]
+    }
+  },
+  {
+    id: 'tattoo-generator',
+    name: 'TattooAI',
+    description: 'Create personalized tattoo designs with AI',
+    creatorID: '2',
+    creatorUsername: 'TattooGenie',
+    coverImage: "/TattooAI.webp",
+    model: models[1],
+    promptForm: {
+      id: 'tattoo-prompt',
+      name: 'Tattoo Design Generator',
+      description: 'Generate custom tattoo ideas and designs',
+      promptLines: [
+        {
+          id: 'idea',
+          text: 'Enter your tattoo idea',
+          placeholder: 'a majestic wolf with roses',
+          options: []
+        },
+        {
+          id: 'style',
+          text: 'Select a style',
+          placeholder: 'Choose your preferred style',
+          options: [
+            'Geometric',
+            'Watercolor',
+            'Dotwork',
+            'Old School',
+            'Minimalist',
+            '3D',
+            'Blackwork',
+            'Negative Space',
+            'Japanese',
+            'Realistic',
+            'Tribal',
+            'Cartoon',
+            'Surreal'
+          ]
+        },
+        {
+          id: 'color',
+          text: 'Choose colors',
+          placeholder: 'Color options for your tattoo',
+          options: [
+            'Colorful',
+            'Black and White',
+            'Pastel',
+            'Bold Colors',
+            'Monochrome'
+          ]
+        },
+        {
+          id: 'placement',
+          text: 'Tattoo placement',
+          placeholder: 'Where do you want the tattoo?',
+          options: [
+            'Arm',
+            'Back',
+            'Leg',
+            'Chest',
+            'Wrist',
+            'Ankle',
+            'Shoulder'
           ]
         }
       ]

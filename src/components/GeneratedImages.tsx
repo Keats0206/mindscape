@@ -1,6 +1,7 @@
 'use client';
 
 import { memo } from 'react';
+import Image from 'next/image';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogTrigger, DialogContent } from '@/components/ui/dialog';
 
@@ -25,24 +26,28 @@ const GeneratedImages = memo(({
             <Dialog key={index}>
               <DialogTrigger>
                 <div className="text-center flex flex-col items-center w-full">
-                  <img
+                  <Image
                     src={image}
                     alt={text}
                     width={512}
                     height={512}
                     className="rounded-xl"
+                    placeholder="blur"
+                    blurDataURL={image}
                   />
                   <p className="mt-2 text-sm text-gray-600 line-clamp-2">{text}</p>
                 </div>
               </DialogTrigger>
               <DialogContent className='h-screen max-w-screen'> 
                 <div className='pt-12 flex w-full h-full flex flex-col items-center justify-center'>
-                  <img
+                  <Image
                     src={image}
                     alt={text}
                     width={720}
                     height={720}
                     className="rounded-xl"
+                    placeholder="blur"
+                    blurDataURL={image}
                   />
                   <p className="mt-2 text-sm text-gray-600 text-center">{text}</p>
                 </div>

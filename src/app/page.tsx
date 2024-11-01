@@ -1,6 +1,6 @@
 
 import { getCurrentUser } from '@/utils/user';
-import { WelcomeState } from '@/components/unused/WelcomeState';
+import { WelcomeState } from '@/components/WelcomeState';
 import HomeClient from '@/components/HomeClient';
 
 export default async function HomePage() {
@@ -18,3 +18,4 @@ export default async function HomePage() {
     </div>
   );
 }
+

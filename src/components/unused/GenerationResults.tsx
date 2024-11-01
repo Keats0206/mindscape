@@ -25,6 +25,8 @@ export function GenerationResults({ items, error }: GenerationResultsProps) {
               height={512}
               unoptimized
               className="rounded shadow-lg"
+              placeholder="blur"
+              blurDataURL={image}
             />
             <p className="mt-2 text-sm text-gray-600">{text}</p>
           </div>

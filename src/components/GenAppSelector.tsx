@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { GenApp } from '@/types';
+import Image from 'next/image';
 import {
   Sheet,
   SheetContent,
@@ -30,7 +31,15 @@ export const GenAppSelector = ({ genApps, activeGenApp, onGenAppChange }: GenApp
       <SheetTrigger className='w-full' disabled={true}>
         <div className='p-2 flex flex-row gap-2 border border-gray-200 rounded-md'>
           <div className='w-12 h-12 bg-gray-200 rounded-md '>
-            <img src={activeGenApp.coverImage} alt={activeGenApp.model.name} className='w-full h-full object-cover rounded-md' />
+            <Image 
+              src={activeGenApp.coverImage} 
+              alt={activeGenApp.model.name} 
+              width={48}
+              height={48}
+              className='w-full h-full object-cover rounded-md' 
+              placeholder="blur" 
+              blurDataURL={activeGenApp.coverImage} 
+            />
           </div>
           <div className='flex flex-col items-start'>
             <div className='font-bold'>{activeGenApp.name}</div>
@@ -46,7 +55,15 @@ export const GenAppSelector = ({ genApps, activeGenApp, onGenAppChange }: GenApp
             <button key={i} onClick={() => handleGenAppSelect(genApp)}>
               <div className='hover:bg-gray-100 flex flex-col gap-2 border border-gray-200 rounded-md p-2'>
                 <div className='w-full aspect-square bg-gray-200 rounded-md'>
-                  <img src={genApp.coverImage} alt={genApp.name} className='w-full h-full object-cover rounded-md' />
+                  <Image 
+                    src={genApp.coverImage} 
+                    alt={genApp.name} 
+                    width={100}
+                    height={100}
+                    className='w-full h-full object-cover rounded-md' 
+                    placeholder="blur" 
+                    blurDataURL={genApp.coverImage} 
+                  />
                 </div>
                 <div className='flex flex-col justify-center items-start w-full'>
                     <div className='font-bold'>{genApp.name}</div>
