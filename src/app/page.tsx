@@ -1,7 +1,6 @@
-
 import { getCurrentUser } from '@/utils/user';
-import { WelcomeState } from '@/components/WelcomeState';
 import HomeClient from '@/components/HomeClient';
+import { LandingPage } from '@/components/LandingPage';
 
 export default async function HomePage() {
   const userData = await getCurrentUser();
@@ -11,9 +10,7 @@ export default async function HomePage() {
       {userData ? (
         <HomeClient initialUserData={userData} />
       ) : (
-        <div className='h-screen w-screen flex items-center justify-center'>
-          <WelcomeState />
-        </div>
+        <LandingPage />
       )}
     </div>
   );

@@ -88,8 +88,7 @@ const PromptForm = memo(({ onPromptChange, genApp }: {
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-4 w-full">
-      {/* Hidden element for measuring text width */}
-      <Tabs defaultValue="account">
+      <Tabs defaultValue="prompt">
         <TabsList>
           <TabsTrigger value="prompt">Prompt Mode</TabsTrigger>
           <TabsTrigger value="open">Open Mode</TabsTrigger>
@@ -147,7 +146,7 @@ const PromptForm = memo(({ onPromptChange, genApp }: {
       </TabsContent>
       <TabsContent value="open">
         <div className="w-full max-w-full">
-         <Textarea onChange={(e) => onPromptChange(e.target.value)} placeholder="Enter your prompt here..." className="w-full bg-white"/>
+         <Textarea onChange={(e) => onPromptChange(e.target.value)} placeholder="Enter your prompt here..." className="w-full bg-white min-h-[14px]"/>
         </div>
       </TabsContent>
     </Tabs>

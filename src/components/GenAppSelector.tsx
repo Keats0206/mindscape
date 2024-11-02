@@ -28,22 +28,22 @@ export const GenAppSelector = ({ genApps, activeGenApp, onGenAppChange }: GenApp
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetTrigger className='w-full' disabled={true}>
+      <SheetTrigger className='w-full'>
         <div className='p-2 flex flex-row gap-2 border border-gray-200 rounded-md'>
-          <div className='w-12 h-12 bg-gray-200 rounded-md '>
+          <div className='w-12 h-12 bg-gray-200 rounded-md'>
             <Image 
               src={activeGenApp.coverImage} 
               alt={activeGenApp.model.name} 
               width={48}
               height={48}
-              className='w-full h-full object-cover rounded-md' 
+              className='w-full h-full object-cover rounded-md aspect-square' 
               placeholder="blur" 
               blurDataURL={activeGenApp.coverImage} 
             />
           </div>
           <div className='flex flex-col items-start'>
             <div className='font-bold'>{activeGenApp.name}</div>
-            <div className='text-xs text-gray-500 line-clamp-1 overflow-hidden'>{activeGenApp.model.description}</div> 
+            <div className='text-xs text-gray-500 line-clamp-1 overflow-hidden'>{activeGenApp.description}</div> 
           </div>  
         </div>
         <div className='text-xs text-gray-500 w-full text-left pt-1'>More apps coming soon, including interior design, home decor, and more! Have an idea? <a href="mailto:team@genspoai.com" className='text-blue-500'>team@genspoai.com</a></div>
@@ -60,7 +60,7 @@ export const GenAppSelector = ({ genApps, activeGenApp, onGenAppChange }: GenApp
                     alt={genApp.name} 
                     width={100}
                     height={100}
-                    className='w-full h-full object-cover rounded-md' 
+                    className='w-full h-full object-cover rounded-md aspect-square overflow-hidden' 
                     placeholder="blur" 
                     blurDataURL={genApp.coverImage} 
                   />
