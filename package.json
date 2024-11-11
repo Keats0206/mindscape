@@ -41,6 +41,7 @@
     "react-dom": "^18",
     "react-icon-cloud": "^4.1.4",
     "replicate": "^1.0.1",
+    "resend": "^4.0.1-alpha.0",
     "sass": "^1.79.5",
     "stripe": "^17.2.0",
     "tailwind-merge": "^2.5.4",

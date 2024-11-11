@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/server";
 import { DropdownMenuGroup, DropdownMenu, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
 import { User, LogOut } from "lucide-react";
-
+import { FeedbackPopover } from "@/components/FeedbackPopover";
+ 
 export default async function AuthButton() {
   const supabase = await createClient();
   const {
@@ -15,12 +16,16 @@ export default async function AuthButton() {
     <div className="w-full flex flex-row justify-between items-center gap-2 pl-2">
       <div className="flex flex-row items-center gap-2">
         <div className="flex items-center justify-center">
-          <Link href="/explore" className="font-medium hover:bg-stone-100 rounded-md p-2 transition-all duration-300">
+          {/* <Link href="/explore" className="text-sm font-medium hover:bg-stone-100 rounded-md p-2 transition-all duration-300">
             Explore
+          </Link> */}
+          <Link href="/create" className="text-sm font-medium hover:bg-stone-100 rounded-md p-2 transition-all duration-300">
+            Create
           </Link>
         </div>
       </div>
-      <div>
+      <div className="flex flex-row items-center gap-2">
+        <FeedbackPopover userEmail={user.email} />
         <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant={"outline"} className="cursor-pointer rounded-full w-10 h-10 flex items-center justify-center bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:opacity-80 active:scale-90 transition-all duration-300">

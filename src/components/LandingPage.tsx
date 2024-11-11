@@ -12,12 +12,11 @@ export function LandingPage() {
     <div className="w-screen h-screen">
       <div className="z-20 flex flex-col items-center justify-center w-full h-full absolute">
         <div className="flex flex-col items-center justify-center p-12 rounded-xl bg-white text-4xl w-auto max-w-xl text-center">
-        <div className='flex flex-row font-medium text-3xl items-center font-semibold'>
-                        <div>genspo</div>
-                        <div className="text-primary">ai</div>
-                    </div>
+          <div className='flex flex-row font-medium text-3xl items-center font-semibold'>
+            <div>An AI Inspiration Engine</div>
+          </div>
           <div className="text-xl text-gray-500 pt-4">
-            The first generative AI app store
+            Generate infinite inspiration with custom AI models for outfits, interior designs and more
           </div>
           <div className="flex flex-row gap-2 pt-4">
             <Link href="/signup">

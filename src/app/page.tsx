@@ -1,5 +1,5 @@
 import { getCurrentUser } from '@/utils/user';
-import HomeClient from '@/components/HomeClient';
+import HomeComponent from '@/components/HomeComponent';
 import { LandingPage } from '@/components/LandingPage';
 
 export default async function HomePage() {
@@ -8,7 +8,7 @@ export default async function HomePage() {
   return (
     <div>
       {userData ? (
-        <HomeClient initialUserData={userData} />
+        <HomeComponent />
       ) : (
         <LandingPage />
       )}
