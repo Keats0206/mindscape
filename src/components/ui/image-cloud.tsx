@@ -19,7 +19,7 @@ export const cloudProps: Omit<ICloud, "children"> = {
     reverse: true,
     depth: 1,
     wheelZoom: false,
-    imageScale: 2,
+    imageScale: 3,
     activeCursor: "default",
     tooltip: "native",
     initial: [0.1, -0.1],
@@ -42,8 +42,8 @@ export const renderCustomImage = (image: ImageItem, theme: string) => {
       <Image    
         src={image.src}
         alt={image.alt}
-        width={image.width || 72}
-        height={image.height || 72}
+        width={image.width || 60}
+        height={image.height || 60}
         style={{
           filter: theme === "dark" ? "brightness(1.2)" : "none",
         }}

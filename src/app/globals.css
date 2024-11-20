@@ -15,60 +15,55 @@ body {
 @layer base {
   :root {
     /* Base colors */
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    --background: 0 0% 100%;       /* White */
+    --foreground: 0 0% 10%;        /* Dark gray for primary text */
 
     /* Card & Popover */
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
+    --card: 0 0% 98%;              /* Light gray for cards */
+    --card-foreground: 0 0% 15%;   /* Darker gray for card text */
+    --popover: 0 0% 98%;           /* Same as card */
+    --popover-foreground: 0 0% 15%;
 
-    /* Primary - using #a78bfa (purple-400) */
-    --primary: 259 96% 76%;
-    --primary-foreground: 0 0% 100%;
+    /* Primary - Off-black for main UI elements */
+    --primary: 0 0% 8%;            /* Off-black */
+    --primary-foreground: 0 0% 100%; /* White text on primary */
 
-    /* Secondary - softer purple */
-    --secondary: 259 30% 96%;
-    --secondary-foreground: 259 50% 20%;
+    /* Secondary - Medium gray for secondary elements */
+    --secondary: 0 0% 60%;         /* Medium gray */
+    --secondary-foreground: 0 0% 100%;
 
-    /* Muted */
-    --muted: 259 20% 96%;
-    --muted-foreground: 259 10% 45%;
+    /* Muted - Soft gray for less important elements */
+    --muted: 0 0% 90%;             /* Very light gray */
+    --muted-foreground: 0 0% 25%;  /* Darker gray for muted text */
 
-    /* Accent - lighter purple */
-    --accent: 259 96% 85%;
-    --accent-foreground: 259 50% 20%;
+    /* Accent - Slightly darker gray for subtle emphasis */
+    --accent: 0 0% 70%;            /* Medium-dark gray */
+    --accent-foreground: 0 0% 100%;
 
-    /* Destructive */
-    --destructive: 0 100% 63%;
+    /* Destructive - Light red for warnings */
+    --destructive: 0 100% 63%;     /* Red for destructive actions */
     --destructive-foreground: 0 0% 100%;
 
     /* Borders & Inputs */
-    --border: 259 20% 90%;
-    --input: 259 20% 90%;
-    --ring: 259 96% 76%;
+    --border: 0 0% 85%;            /* Light gray for borders */
+    --input: 0 0% 85%;             /* Same for inputs */
+    --ring: 0 0% 40%;              /* Medium gray for focus rings */
 
-    /* Your existing chart & color system */
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    
-    --color-1: 0 100% 63%;
-    --color-2: 270 100% 63%;
-    --color-3: 210 100% 63%;
-    --color-4: 195 100% 63%;
-    --color-5: 90 100% 63%;
+    /* Chart & color system - Neutral tones for consistency */
+    --chart-1: 0 0% 20%;           /* Dark gray */
+    --chart-2: 0 0% 30%;           /* Medium-dark gray */
+    --chart-3: 0 0% 40%;           /* Medium gray */
+    --chart-4: 0 0% 50%;           /* Medium-light gray */
+    --chart-5: 0 0% 60%;           /* Light gray */
+
+    --color-1: 0 0% 30%;
+    --color-2: 0 0% 45%;
+    --color-3: 0 0% 60%;
+    --color-4: 0 0% 75%;
+    --color-5: 0 0% 90%;
 
     --radius: 0.5rem;
   }
-}
-
-::selection {
-  background: rgb(167, 139, 250);
-  color: rgb(255, 255, 255);
 }
 
 ::selection {

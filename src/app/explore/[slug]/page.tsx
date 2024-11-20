@@ -130,6 +130,8 @@ export default function CategoryPage() {
           .contains("tags", searchTags);
   
         if (generationsError) throw generationsError;
+
+        console.log("GENERATIONS DATA:", generationsData);
   
         setGenerations(generationsData || []);
   
