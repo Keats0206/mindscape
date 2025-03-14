@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@layer base {
+  :root {
+    /* Base colors */
+    --background: 0 0% 100%;       /* White */
+    --foreground: 0 0% 10%;        /* Dark gray for primary text */
+
+    /* Card & Popover */
+    --card: 0 0% 98%;              /* Light gray for cards */
+    --card-foreground: 0 0% 15%;   /* Darker gray for card text */
+    --popover: 0 0% 98%;           /* Same as card */
+    --popover-foreground: 0 0% 15%;
+
+    /* Primary - Off-black for main UI elements */
+    --primary: 0 0% 8%;            /* Off-black */
+    --primary-foreground: 0 0% 100%; /* White text on primary */
+
+    /* Secondary - Medium gray for secondary elements */
+    --secondary: 0 0% 60%;         /* Medium gray */
+    --secondary-foreground: 0 0% 100%;
+
+    /* Muted - Soft gray for less important elements */
+    --muted: 0 0% 90%;             /* Very light gray */
+    --muted-foreground: 0 0% 25%;  /* Darker gray for muted text */
+
+    /* Accent - Slightly darker gray for subtle emphasis */
+    --accent: 0 0% 70%;            /* Medium-dark gray */
+    --accent-foreground: 0 0% 100%;
+
+    /* Destructive - Light red for warnings */
+    --destructive: 0 100% 63%;     /* Red for destructive actions */
+    --destructive-foreground: 0 0% 100%;
+
+    /* Borders & Inputs */
+    --border: 0 0% 85%;            /* Light gray for borders */
+    --input: 0 0% 85%;             /* Same for inputs */
+    --ring: 0 0% 40%;              /* Medium gray for focus rings */
+
+    /* Chart & color system - Neutral tones for consistency */
+    --chart-1: 0 0% 20%;           /* Dark gray */
+    --chart-2: 0 0% 30%;           /* Medium-dark gray */
+    --chart-3: 0 0% 40%;           /* Medium gray */
+    --chart-4: 0 0% 50%;           /* Medium-light gray */
+    --chart-5: 0 0% 60%;           /* Light gray */
+
+    --color-1: 0 0% 30%;
+    --color-2: 0 0% 45%;
+    --color-3: 0 0% 60%;
+    --color-4: 0 0% 75%;
+    --color-5: 0 0% 90%;
+
+    --radius: 0.5rem;
+  }
+}
+
+::selection {
+  background: rgb(146, 144, 238);
+  color: rgb(47, 44, 230)
+}
