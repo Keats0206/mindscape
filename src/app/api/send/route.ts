@@ -1,12 +1,26 @@
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+
+if (!RESEND_API_KEY) {
+  console.warn('Resend API key is not set. Email functionality will be disabled.');
+}
+
+const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
 
 export async function POST(request: Request) {
   try {
     const { message, userEmail } = await request.json();
     const timestamp = new Date().toLocaleString();
+
+    if (!resend) {
+      console.warn('Email not sent: Resend client is not initialized');
+      return NextResponse.json(
+        { error: 'Email service is not configured' },
+        { status: 503 }
+      );
+    }
 
     const { data, error } = await resend.emails.send({
       from: 'Feedback <feedback@genspoai.com>',
@@ -27,13 +41,13 @@ export async function POST(request: Request) {
     });
 
     if (error) {
-      console.log(error);
+      console.error('Resend error:', error);
       return NextResponse.json({ error }, { status: 400 });
     }
 
     return NextResponse.json({ success: true, data });
   } catch (error) {
-    console.log(error);
+    console.error('Email sending error:', error);
     return NextResponse.json({ error: 'Error sending email' }, { status: 500 });
   }
 }
