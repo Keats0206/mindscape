@@ -109,80 +109,63 @@ export default function Home() {
   };
 
   return (
-    <div className="p-2 w-screen h-screen flex justify-center items-center">
-      <div className='max-w-[430px] w-full h-[844px] bg-white flex flex-col overflow-hidden'>
-        <div className="border-b border-black">
+    <div className="p-2 w-screen h-screen flex justify-center">
+      <div className='gap-4 max-w-[430px] w-full h-[100dvh] bg-white flex flex-col overflow-hidden relative'>
+        {/* Fixed Header */}
+        <div className="sticky top-4 z-10 bg-white">
           <div className='border border-black p-2 text-xl font-serif leading-tight'>
             Genspo is an <span className="font-bold">AI fashion try-on</span> app to visualize yourself in any outfit you can imagine.
-          <span className='px-1.5 ml-2 text-base bg-lime-200 rounded-xl font-bold uppercase'>
-            $19.99/month
-          </span>
+            <span className='px-1.5 ml-2 text-base bg-lime-200 rounded-xl font-bold uppercase'>
+              $19.99/month
+            </span>
           </div>
           <button 
             onClick={() => setShowModal(true)}
-            className='hover:opacity-80 h-16 w-full bg-pink-500 text-white font-medium tracking-wider text-xs uppercase border-l border-r border-black'
+            className='hover:opacity-80 h-12 w-full bg-pink-500 text-white font-medium tracking-wider text-xs uppercase border-l border-r border-b border-black'
           >
             Join Beta
           </button>
         </div>
         
-        <div className="flex items-center justify-center border-stone-200 border my-2 h-full relative overflow-hidden">
+        {/* Flexible Image Section */}
+        <div className="flex-1 flex items-center justify-center border border-stone-200 border-y overflow-hidden">
           <img 
             src={currentImage} 
             alt="Model" 
-            className={`h-full object-fit transition-all duration-500 ${
+            className={`w-full h-full object-contain transition-all duration-500 ${
               isAnimating ? 'scale-105 blur-sm' : ''
             }`}
           />
         </div>
         
-        <div className="h-96 p-1.5 flex flex-col border border-black">
-          {/* <div className="flex flex-row justify-between">
-            <div className="flex flex-row gap-2">
-              <button 
-                onClick={() => handleGenderChange('women')}
-                className={`text-xs tracking-wide transition-all ${
-                  gender === 'women' ? 'text-black' : 'text-black/50 hover:text-black'
-                }`}
-              >
-                WOMEN
-              </button>
-              <button 
-                onClick={() => handleGenderChange('men')}
-                className={`text-xs tracking-wide transition-all ${
-                  gender === 'men' ? 'text-black' : 'text-black/50 hover:text-black'
-                }`}
-              >
-                MEN
-              </button>
-            </div>
-            <button className='text-xs tracking-wide transition-all' onClick={handleTryOn}>shuffle</button>
-          </div> 
-          */}
-          <div className='grid grid-cols-2 gap-1.5 mb-1'>
-            {garments[gender].map((garment, index) => (
-              <div 
-                key={index} 
-                className={`relative aspect-square w-full overflow-hidden cursor-pointer transition-all`}
-              >
-                <img 
-                  src={garment.image} 
-                  alt={garment.name}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-[10px] p-0.5 text-center">
-                  {garment.type === 'upper' ? 'Upper' : 'Lower'}
+        {/* Fixed Controls Section */}
+        <div className="sticky bottom-4 bg-white border border-black">
+          <div className="p-3 flex flex-col gap-2">
+            <div className='grid grid-cols-2 gap-1.5'>
+              {garments[gender].map((garment, index) => (
+                <div 
+                  key={index} 
+                  className={`relative aspect-square w-full overflow-hidden cursor-pointer transition-all`}
+                >
+                  <img 
+                    src={garment.image} 
+                    alt={garment.name}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-[10px] p-0.5 text-center">
+                    {garment.type === 'upper' ? 'Upper' : 'Lower'}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+            <button 
+              onClick={handleTryOn}
+              disabled={isAnimating}
+              className='border border-black bg-white w-full text-black p-1.5 rounded-full hover:bg-black hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm'
+            >
+              {isAnimating ? '...' : 'Generate'}
+            </button>
           </div>
-          <button 
-            onClick={handleTryOn}
-            disabled={isAnimating}
-            className='border border-black bg-white w-full text-black p-1.5 rounded-full hover:bg-black hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm mt-auto'
-          >
-            {isAnimating ? '...' : 'Generate'}
-          </button>
         </div>
 
         {/* Email Signup Modal */}
