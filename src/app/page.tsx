@@ -108,12 +108,6 @@ export default function Home() {
     }, 2000);
   };
 
-  // Track gender changes
-  // const handleGenderChange = (newGender: 'men' | 'women') => {
-  //   track('gender_changed', { from: gender, to: newGender });
-  //   setGender(newGender);
-  // };
-
   return (
     <div className="p-2 w-screen h-screen flex justify-center items-center">
       <div className='max-w-[430px] w-full h-[844px] bg-white flex flex-col overflow-hidden'>
