@@ -1,10 +1,3 @@
-'use client';
-
-import { useState } from 'react';
-import { supabase } from '../utils/supabase/client';
-import { track } from '@vercel/analytics';
-import { PostgrestError } from '@supabase/supabase-js';
-
 export default function Home() {
   return (  
     <div className='space-y-4 flex flex-col items-center justify-center h-screen w-screen'>
