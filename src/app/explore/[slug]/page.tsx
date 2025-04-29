@@ -19,6 +19,9 @@ import CategoryCard from "@/components/CategoryCard";
 
 // Create a separate SEO component for better organization
 const DynamicSEO = ({ category, generations }: { category: Category, generations: Generation[] }) => {
+  if (!category) {
+    return null;
+  }
   return (
     <Head>
       {/* Basic Meta Tags */}
@@ -98,7 +101,10 @@ const DynamicSEO = ({ category, generations }: { category: Category, generations
 export default function CategoryPage() {
   const router = useRouter(); 
   const params = useParams();
-  const [category] = useState<Category>(categoryData.find(cat => cat.slug === params.slug) || categoryData[0]);
+
+  const currentSlug = typeof params.slug === 'string' ? params.slug : undefined;
+  const category = currentSlug ? categoryData.find(cat => cat.slug === currentSlug) : undefined;
+
   const [searchTags, setSearchTags] = useState<string[]>([]);
   const [relatedCategories, setRelatedCategories] = useState<Category[]>([]);
   const [generations, setGenerations] = useState<Generation[]>([]);
@@ -106,23 +112,35 @@ export default function CategoryPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (currentSlug && !category) {
+      console.warn(`Category not found for slug: ${currentSlug}, redirecting to /explore.`);
+      router.push('/explore');
+    }
+  }, [currentSlug, category, router]);
+
+  useEffect(() => {
     if (category) {
-      // Set search tags based on slug for database filtering
       const tags = category.slug.split('-').filter(tag => tag.length > 2);
       setSearchTags(tags);
     } else {
-      router.push('/explore');  
+      setSearchTags([]);
     }
-  }, [category, router]);
+  }, [category]);
 
   useEffect(() => {
-    if (!searchTags.length) return;
-  
+    if (!category || !searchTags.length) {
+      setGenerations([]);
+      setRelatedCategories([]);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
     const fetchData = async () => {
       setLoading(true);
       setError(null);
+      console.log(`Fetching data for category: ${category.name}, tags: ${searchTags.join(', ')}`);
       try {
-        // Fetch generations that match all search tags
         const { data: generationsData, error: generationsError } = await supabase
           .from("generations")
           .select("*")
@@ -135,46 +153,49 @@ export default function CategoryPage() {
   
         setGenerations(generationsData || []);
   
-        // Filter out current category and select related ones
         const otherCategories = categoryData.filter(cat => cat.slug !== category.slug);
-        const randomCategories = otherCategories.sort(() => 0.5 - Math.random()).slice(0, 4);
+        const randomCategories = otherCategories.sort(() => 0.5 - Math.random()).slice(0, Math.min(4, otherCategories.length));
   
-        console.log("RANDOM CATEGORIES:", randomCategories);
+        console.log("RANDOM RELATED CATEGORIES:", randomCategories);
   
-        const categoryPostsData = [];
-        for (const cat of randomCategories) {
+        const relatedCategoryDataPromises = randomCategories.map(async (cat) => {
+          const catTags = cat.slug.split('-').filter(tag => tag.length > 2);
           const { data, error } = await supabase
             .from("generations")
             .select("id, result_url, prompt")
-            .contains("tags", cat.tags)
+            .contains("tags", catTags)
+            .eq("is_public", true)
             .order("created_at", { ascending: false })
-            .limit(6);
+            .limit(1);
   
-          if (error) throw error;
+          if (error) {
+            console.error(`Error fetching preview for category ${cat.name}:`, error);
+            return { ...cat, posts: [] };
+          }
+          return { ...cat, posts: data || [] };
+        });
   
-          categoryPostsData.push({
-            name: cat.name,
-            description: cat.description,
-            slug: cat.slug,
-            tags: cat.tags,
-            posts: data || [] // Ensure an empty array if no data is found
-          });
-        }
+        const resolvedRelatedCategories = await Promise.all(relatedCategoryDataPromises);
   
-        console.log("GOT RELATED CATEGORIES WITH POSTS:", categoryPostsData);
-        setRelatedCategories(categoryPostsData);
-      } catch (err) {
+        console.log("RELATED CATEGORIES WITH POSTS:", resolvedRelatedCategories);
+        setRelatedCategories(resolvedRelatedCategories);
+      } catch (err: unknown) {
         console.error("Error fetching data:", err);
-        setError("Failed to load data. Please try again later.");
+        const errorMessage = err && typeof err === 'object' && 'message' in err 
+          ? (err.message as string) 
+          : "Please try again later.";
+        setError(`Failed to load data: ${errorMessage}`);
+        setGenerations([]);
+        setRelatedCategories([]);
       } finally {
         setLoading(false);
       }
     };
   
     fetchData();
-  }, [searchTags, category.slug]);
+  }, [searchTags, category]);
 
-  if (loading) {
+  if (loading && !error) {
     return (
       <div className="min-h-screen text-xs text-gray-500 w-screen h-full flex justify-center items-center">
         <LoadingSpinner />
@@ -184,8 +205,16 @@ export default function CategoryPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen text-xs text-red-500 w-screen h-full flex justify-center items-center">
+      <div className="min-h-screen text-xs text-red-500 w-screen h-full flex justify-center items-center p-4">
         {error}
+      </div>
+    );
+  }
+
+  if (!category) {
+    return (
+      <div className="min-h-screen flex justify-center items-center">
+        Loading category information...
       </div>
     );
   }
@@ -204,7 +233,7 @@ export default function CategoryPage() {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink href={`/explore/${params.slug}`} className="capitalize">
+            <BreadcrumbLink href={`/explore/${currentSlug}`} className="capitalize">
               {category.name}
             </BreadcrumbLink>
           </BreadcrumbItem>
@@ -212,8 +241,10 @@ export default function CategoryPage() {
       </Breadcrumb>
       <h1 className="capitalize text-5xl font-bold pt-2">{category.name}</h1>
       <h2 className="text-xl text-gray-500 pt-2 pb-6">{category.description}</h2>
-      {generations.length === 0 ? (
-        <div className="text-center text-gray-500">No generations found for this category.</div>
+      {loading ? (
+        <div className="text-center text-gray-500"><LoadingSpinner /></div>
+      ) : generations.length === 0 ? (
+        <div className="text-center text-gray-500 py-8">No public generations found matching the tags for &apos;{category.name}&apos;.</div>
       ) : (
         <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {generations.map((item) => (
@@ -221,16 +252,19 @@ export default function CategoryPage() {
           ))}
         </div>
       )}
-      {/* Add this in later not core function */}
-      <div className="w-full">
+      <div className="w-full pt-10">
         <div className="text-2xl font-bold pt-6 pb-6">Explore More</div>
-        <div className="content-start grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {relatedCategories.map((relatedCategory, index) => (
-            <div key={index} className="flex justify-center items-center">
-              <CategoryCard category={relatedCategory} />
-            </div>
-          ))}
-        </div>
+        {relatedCategories.length > 0 ? (
+          <div className="content-start grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {relatedCategories.map((relatedCategory, index) => (
+              <div key={index} className="flex justify-center items-center">
+                <CategoryCard category={relatedCategory} />
+              </div>
+            ))}
+          </div>
+        ) : (
+          !loading && <div className="text-center text-gray-500">No other categories to explore currently.</div>
+        )}
       </div>
     </div>
   );

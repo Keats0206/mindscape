@@ -31,7 +31,7 @@ export default async function AuthButton() {
         <FeedbackPopover userEmail={user.email} />
         <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant={"outline"} className="cursor-pointer rounded-full w-10 h-10 flex items-center justify-center bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:opacity-80 active:scale-90 transition-all duration-300">
+          <Button variant={"outline"} className="text-white cursor-pointer rounded-full w-10 h-10 flex items-center justify-center bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:opacity-80 active:scale-90 transition-all duration-300">
             {user.email?.slice(0,1).toUpperCase()}
           </Button>
         </DropdownMenuTrigger>

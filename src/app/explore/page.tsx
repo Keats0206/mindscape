@@ -22,25 +22,36 @@ export default function ExplorePage() {
         const fetchedCategories: Category[] = [];
         const trimmedCategories = categoryData.slice(0, 10);
         for (const category of trimmedCategories) {    
-          console.log(category);      
-          const { data, error } = await supabase
-            .from('generations')
-            .select('id, result_url, prompt')
-            .contains('tags', [category.tags])
-            .order('created_at', { ascending: false })
-            .limit(6);
+          
+          console.log("Processing category:", category.name);
 
-          if (error) throw error;
+          let postsData: Post[] = [];
+          
+          try {
+            const { data, error } = await supabase
+              .from('generations')
+              .select('id, result_url, prompt')
+              .overlaps('tags', category.tags)
+              .order('created_at', { ascending: false })
+              .limit(6);
 
-          if (data && data.length > 0) {
-            fetchedCategories.push({
-              name: category.name,
-              description: category.description,
-              slug: category.slug,
-              tags: category.tags,
-              posts: data as Post[]
-            });
+            if (error) {
+              console.error(`Error fetching posts for category ${category.name}:`, error);
+            } else if (data) {
+              postsData = data as Post[];
+            }
+          } catch (err) {
+            console.error(`Unexpected error fetching posts for category ${category.name}:`, err);
           }
+
+          fetchedCategories.push({
+            name: category.name,
+            description: category.description,
+            slug: category.slug,
+            tags: category.tags,
+            posts: postsData
+          });
+
         }
         setFeaturedCategories(fetchedCategories);
       } catch (err) {

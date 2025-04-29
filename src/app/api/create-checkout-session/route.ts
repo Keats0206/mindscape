@@ -2,10 +2,29 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createClient } from '@/utils/supabase/server';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+// Initialize Stripe with error handling
+let stripe: Stripe | null = null;
+try {
+  const apiKey = process.env.STRIPE_SECRET_KEY;
+  if (!apiKey) {
+    console.error('STRIPE_SECRET_KEY is missing in environment variables');
+  } else {
+    stripe = new Stripe(apiKey);
+  }
+} catch (error) {
+  console.error('Failed to initialize Stripe client:', error);
+}
 
 export async function POST(request: Request) {
   try {
+    // Verify Stripe is initialized
+    if (!stripe) {
+      return NextResponse.json(
+        { error: 'Payment service not configured. Please contact support.' },
+        { status: 500 }
+      );
+    }
+
     const origin = request.headers.get('origin') || 'https://genspoai.com';
     const { userId } = await request.json();
 
@@ -21,6 +40,8 @@ export async function POST(request: Request) {
       .eq('id', userId)
       .single();
 
+    console.log(userData);
+
     if (userError || !userData) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
@@ -35,7 +56,7 @@ export async function POST(request: Request) {
       customer: stripe_customer_id,
       line_items: [
         {
-          price: 'price_1QDCwQAmqbespDjmXpqTT92U',
+          price: 'price_1RJF4QEmPHLIRh7yaMgthMgr',
           quantity: 1,
         },
       ],

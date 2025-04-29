@@ -63,18 +63,24 @@ export async function signUpAction(formData: FormData): Promise<void> {
         throw new Error("Error creating user in custom table: " + userError.message);
       }
 
-      // Insert free tier subscription
+      // Insert free tier subscription with nullable fields
       const { error: subscriptionError } = await supabase
         .from('subscriptions')
         .insert({
           user_id: authData.user.id,
-          status: 'inactice',
-          plan_id: 'trialing',
+          status: 'trialing',
+          plan_id: 'free_tier',
           current_period_start: now,
-          current_period_end: null, // Null for indefinite free tier
-          stripe_customer_id: customer.id, // Store Stripe customer ID
+          current_period_end: new Date(Date.now() + 1000 * 60 * 60 * 24 * 14).toISOString(),
+          stripe_customer_id: customer.id,
+          stripe_subscription_id: null, // Now nullable
+          stripe_price_id: null, // Now nullable
+          cancel_at_period_end: false,
           created_at: now,
           updated_at: now,
+          canceled_at: null,
+          trial_start: now,
+          trial_end: new Date(Date.now() + 1000 * 60 * 60 * 24 * 14).toISOString(),
         });
 
       if (subscriptionError) {

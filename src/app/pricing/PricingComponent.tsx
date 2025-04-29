@@ -2,6 +2,7 @@ import { Card } from "@/components/ui/card";
 import { CheckCircle } from "lucide-react";
 import SubscribeButton from "@/components/SubscribeButton";
 import { CompleteUserData } from "@/types";
+import { AnimatedShinyText } from "@/components/magicui/animated-shiny-text";
 
 export default function PricingComponent({ userData }: { userData: CompleteUserData }) {
   return (
@@ -9,8 +10,10 @@ export default function PricingComponent({ userData }: { userData: CompleteUserD
       <div className="max-w-lg w-full flex flex-col space-y-4 items-center">
           <h1 className="text-2xl font-semibold pb-4">Upgrade to try beta</h1>
           <Card className="p-6 rounded-md">
-            <h2 className="text-blue-300 text-xl font-medium">Genspo Plus</h2>
-            <p className="mt-2 text-6xl pb-2">$24.99 <span className="text-base opacity-60">USD/month</span></p>
+            <AnimatedShinyText className="inline-flex items-center justify-center py-1 transition ease-out">
+              <h2>TattooAI Plus</h2>
+            </AnimatedShinyText>
+            <p className="mt-2 font-medium text-6xl pb-2">$24.99 <span className="font-light text-base opacity-60">USD/month</span></p>
             <p className="text-sm text-neutral-400 pb-4">
               Unlock the full potential of AI-generated inspiration
             </p>

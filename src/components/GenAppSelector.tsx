@@ -46,7 +46,7 @@ export const GenAppSelector = ({ genApps, activeGenApp, onGenAppChange }: GenApp
             <div className='text-xs text-gray-500 line-clamp-1 overflow-hidden'>{activeGenApp.description}</div> 
           </div>  
         </div>
-        <div className='text-xs text-gray-500 w-full text-left pt-1'>More apps coming soon, including interior design, home decor, and more! Have an idea? <a href="mailto:team@genspoai.com" className='text-blue-500'>team@genspoai.com</a></div>
+        <div className='text-xs text-gray-500 w-full text-left pt-1'>Premium models coming soon, reach out to our team <a href="mailto:team@genspoai.com" className='text-blue-500'>team@genspoai.com</a></div>
       </SheetTrigger>
       <SheetContent side={'left'} className='p-4 space-y-4'>
         <div className='text-sm font-medium pb-2 text-stone-500'>Select A Model</div>
@@ -73,7 +73,7 @@ export const GenAppSelector = ({ genApps, activeGenApp, onGenAppChange }: GenApp
             </button>
           ))}
         </div>
-        <div className='text-sm text-stone-500 pt-4'>Have an idea for a model, reach out to our team <a href="mailto:team@genspoai.com" className='text-blue-500'>team@genspoai.com</a></div>
+        <div className='text-sm text-stone-500 pt-4'>Premium models coming soon, reach out to our team <a href="mailto:team@genspoai.com" className='text-blue-500'>team@genspoai.com</a></div>
       </SheetContent>
     </Sheet>
   );

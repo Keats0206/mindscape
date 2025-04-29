@@ -12,7 +12,7 @@ export default function Login({ searchParams }: { searchParams: Message }) {
         <h1 className="text-2xl font-medium">Login</h1>
           <p className="text-sm text-foreground">
             Dont have an account?{" "}
-            <Link className="text-foreground font-medium underline" href="/sign-up">
+            <Link className="text-foreground font-medium underline" href="/signup">
               Sign up
             </Link>
           </p>

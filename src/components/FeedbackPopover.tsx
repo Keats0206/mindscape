@@ -46,7 +46,7 @@ export function FeedbackPopover({ userEmail }: { userEmail: string | undefined }
           Feedback
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 ml-24">
+      <PopoverContent className="w-80 mr-16">
         <div className="flex flex-col gap-4">
           <p className="text-sm font-medium">What can we do better?</p>
           <div className="flex flex-col gap-2">
