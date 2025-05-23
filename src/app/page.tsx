@@ -1,9 +1,6 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/utils/supabase/server';
-import { Lens } from '@/components/magicui/lens';
 import { GenAppsMarquee } from '@/components/GenAppsMarquee';
-import { TypingAnimation } from '@/components/magicui/typing-animation';
-import { FAQSection } from '@/components/FAQSection';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
@@ -50,25 +47,6 @@ export default async function Home() {
         <SectionHeader title="Access community created models" description="Whether you're a professional artist or a hobbyist, we've got you covered." textAlign='text-center' />
         <GenAppsMarquee />
       </div>
-
-      {/* Unbelievable output quality */}
-
-      {/* <div className='flex flex-row py-24 px-8 bg-stone-100 flex flex-col items-center justify-center space-y-4'>
-        <SectionHeader title="Unbelievable output quality" description="Whether you're a professional artist or a hobbyist, we've got you covered." textAlign='text-start' />
-        <Lens
-          zoomFactor={2}
-          lensSize={150}
-          isStatic={false}
-          ariaLabel="Zoom Area"
-        >
-          <img
-            src="https://images.unsplash.com/photo-1736606355698-5efdb410fe93?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-            alt="image placeholder"
-            width={500}
-            height={500}
-          />
-        </Lens>
-      </div> */}
     </main>
   );
 }

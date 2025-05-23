@@ -31,9 +31,6 @@ const useImageOperations = () => {
       try {
         // Use the POST API for more complex requests with LORA weights
         if (activeGenApp?.loraWeights || imageData) {
-          // Create FormData for the request
-          const formData = new FormData();
-          
           // Convert image to base64 if provided
           let imageBase64 = null;
           if (imageData) {

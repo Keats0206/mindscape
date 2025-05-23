@@ -23,7 +23,19 @@ export async function GET(request: Request) {
 
   const replicate = new Replicate();
   
-  const input: any = {
+  const input: {
+    prompt: string;
+    go_fast?: boolean;
+    num_outputs: number;
+    aspect_ratio: string;
+    output_format: string;
+    output_quality: number;
+    megapixels: string;
+    num_inference_steps: number;
+    lora_weights?: string;
+    image?: string;
+    prompt_strength?: number;
+  } = {
     prompt,
     go_fast: true,
     num_outputs: 1,
@@ -83,10 +95,21 @@ export async function POST(request: Request) {
 
     // Get the model information if genAppId is provided
     const modelToUse = "black-forest-labs/flux-dev-lora" as ReplicateModelID;
-    let loraWeightsToUse = loraWeights;
+    const loraWeightsToUse = loraWeights;
 
     // Basic configuration
-    const input: any = {
+    const input: {
+      prompt: string;
+      num_outputs: number;
+      aspect_ratio: string;
+      output_format: string;
+      output_quality: number;
+      megapixels: string;
+      num_inference_steps: number;
+      lora_weights?: string;
+      image?: string;
+      prompt_strength?: number;
+    } = {
       prompt,
       num_outputs: 1,
       aspect_ratio: "1:1",
