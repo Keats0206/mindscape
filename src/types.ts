@@ -57,6 +57,8 @@ export interface Generation {
   is_public: boolean;
   created_at: string;
   tags: string[];
+  lora_weights?: string;
+  gen_app_id?: string;
 }
 
 export interface CategoryProps {
@@ -77,6 +79,20 @@ export interface Category {
   tags: string[];
   posts?: Post[];
 }
+
+export interface GenApp {
+  id: string;
+  name: string;
+  creatorID: string;
+  creatorUsername: string;
+  coverImage: string;
+  description: string;
+  model: Model;
+  samplePrompts?: string[];
+  inputType?: 'text' | 'image' | 'both';
+  loraWeights?: string;
+}
+
 export interface Model {
   id: number;
   image: string;
@@ -84,6 +100,7 @@ export interface Model {
   value: string;
   description: string;
 }
+
 export interface PromptLine {
   id: string;
   text: string;
@@ -96,15 +113,4 @@ export interface PromptFormDetail {
   name: string;
   description: string;
   promptLines: PromptLine[];
-}
-
-export interface GenApp {
-  id: string;
-  name: string;
-  creatorID: string;
-  creatorUsername: string;
-  coverImage: string;
-  description: string;
-  model: Model;
-  promptForm: PromptFormDetail;
 }

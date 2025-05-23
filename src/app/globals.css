@@ -10,6 +10,14 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+  
+  .animate-marquee {
+    animation: marquee 25s linear infinite;
+  }
+  
+  .animate-blink {
+    animation: blink 1s step-end infinite;
+  }
 }
 
 @layer base {
@@ -108,6 +116,14 @@ body {
     }
   30%, 60% {
     background-position: calc(100% + var(--shiny-width)) 0;
+    }
+  }
+  @keyframes blink {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
     }
   }
 }

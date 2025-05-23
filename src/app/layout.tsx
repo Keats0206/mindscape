@@ -20,8 +20,8 @@ const defaultUrl = process.env.NEXT_PUBLIC_SITE_URL
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "TattooAI",
-  description: "Generate infinite tattoo ideas with AI",
+  title: "GenspoAI",
+  description: "Image generation and editing tools for every use case",
 };
 
 export default async function RootLayout({
@@ -47,7 +47,7 @@ export default async function RootLayout({
                   <nav className="z-50 px-4 flex flex-row justify-between items-center bg-white border-b border-gray-200 absolute top-0 w-screen h-16">
                     <div className='font-medium text-xl items-center font-semibold'>
                       <Link href={"/"} className="flex flex-row">
-                        [TATTOOAI]
+                        [GENSPO<span className="gradient-text from-blue-500 to-purple-500">AI</span>]
                       </Link>
                     </div>
                     <HeaderAuth />

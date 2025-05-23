@@ -21,22 +21,65 @@ const useImageOperations = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
   
-    const generateImage = useCallback(async (text: string) => {
+    const generateImage = useCallback(async (
+      text: string, 
+      activeGenApp?: GenApp, 
+      imageData?: File | null
+    ) => {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await fetch(`/api/generate?text=${encodeURIComponent(text)}`);
-        if (!response.ok) {
-          throw new Error('Failed to generate image');
+        // Use the POST API for more complex requests with LORA weights
+        if (activeGenApp?.loraWeights || imageData) {
+          // Create FormData for the request
+          const formData = new FormData();
+          
+          // Convert image to base64 if provided
+          let imageBase64 = null;
+          if (imageData) {
+            const reader = new FileReader();
+            imageBase64 = await new Promise((resolve) => {
+              reader.onloadend = () => resolve(reader.result);
+              reader.readAsDataURL(imageData);
+            });
+          }
+          
+          // Use POST API with JSON body
+          const response = await fetch('/api/generate', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              prompt: text,
+              loraWeights: activeGenApp?.loraWeights,
+              imageBase64,
+              genAppId: activeGenApp?.id
+            }),
+          });
+          
+          if (!response.ok) {
+            throw new Error('Failed to generate image');
+          }
+          
+          const data = await response.json();
+          return data.imageUrl;
+          
+        } else {
+          // Use the simpler GET API for basic text-to-image generation
+          const response = await fetch(`/api/generate?text=${encodeURIComponent(text)}`);
+          if (!response.ok) {
+            throw new Error('Failed to generate image');
+          }
+          const blob = await response.blob();
+          // Convert blob to base64
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          });
         }
-        const blob = await response.blob();
-        // Convert blob to base64
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result);
-          reader.onerror = reject;
-          reader.readAsDataURL(blob);
-        });
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
         return null;
@@ -51,7 +94,9 @@ const useImageOperations = () => {
       imageData: string, 
       modelUsed: string, 
       isPublic: boolean, 
-      tags: string[]
+      tags: string[],
+      loraWeights?: string,
+      genAppId?: string
     ) => {
       try {
         const response = await fetch('/api/store', {
@@ -66,6 +111,8 @@ const useImageOperations = () => {
             modelUsed,
             isPublic,
             tags,
+            loraWeights,
+            genAppId
           }),
         });
         if (!response.ok) throw new Error('Failed to store generation');
@@ -96,6 +143,7 @@ export default function HomeClient({ initialUserData }: { initialUserData: Compl
   } = useGenerationCount(userDetails.id);
 
   const [currentPrompt, setCurrentPrompt] = useState<string>('');
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
   // Fetch initial generations
   useEffect(() => {
@@ -127,7 +175,7 @@ export default function HomeClient({ initialUserData }: { initialUserData: Compl
     track('Generate');
     setIsGenerating(true);
     try {
-      const imageData = await generateImage(prompt);
+      const imageData = await generateImage(prompt, activeGenApp, selectedImage);
       if (imageData) {
         const tags = prompt.split(' ').filter(Boolean);    
         setIsGenerating(false);
@@ -143,7 +191,9 @@ export default function HomeClient({ initialUserData }: { initialUserData: Compl
           imageData as string, 
           activeGenApp.model.name, 
           isPublic, 
-          tags
+          tags,
+          activeGenApp?.loraWeights,
+          activeGenApp?.id
         );
       }
     } catch (err) {
@@ -152,11 +202,16 @@ export default function HomeClient({ initialUserData }: { initialUserData: Compl
     } finally {
       setIsGenerating(false);
     }
-  }, [generateImage, storeGeneration, userDetails.id, activeGenApp.model.name, isPublic, incrementCount]);
+  }, [generateImage, storeGeneration, userDetails.id, activeGenApp, isPublic, incrementCount, selectedImage]);
+
+  // Handle image change from PromptForm
+  const handleImageChange = useCallback((file: File | null) => {
+    setSelectedImage(file);
+  }, []);
 
   return (
     <div className="w-screen min-h-screen flex flex-col md:flex-row pt-26">
-      <div className="fixed bottom-0 border-t border-2 md:border-0 z-30 w-full md:relative md:w-[400px] flex flex-col gap-4 border-r p-4 md:pt-20">
+      <div className="bg-white fixed bottom-0 border-t border-2 md:border-0 z-30 w-full md:relative md:w-[400px] flex flex-col gap-4 border-r p-4 md:pt-20">
 
         <GenAppSelector 
           genApps={genApps}
@@ -172,6 +227,7 @@ export default function HomeClient({ initialUserData }: { initialUserData: Compl
           onPromptChange={setCurrentPrompt} 
           genApp={activeGenApp}
           key={activeGenApp.id} // Force re-render when genApp changes
+          onImageChange={handleImageChange}
         />
 
         {isProUser || getRemainingGenerations() > 0 ? (

@@ -25,6 +25,9 @@ export default async function AuthButton() {
           <Link href="/explore" className="text-sm font-medium hover:bg-stone-100 rounded-md p-2 transition-all duration-300">
             Explore
           </Link>
+          <Link href="/models" className="text-sm font-medium hover:bg-stone-100 rounded-md p-2 transition-all duration-300">
+            Models
+          </Link>
         </div>
       </div>
       <div className="flex flex-row items-center gap-2">
